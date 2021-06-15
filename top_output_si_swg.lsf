@@ -1,0 +1,84 @@
+deleteall;
+####################################################
+# Bragg grating
+# Bragg gratings reflect propagating light of certain wavelengths
+# and transmit all other wavelengths.
+#
+# Input properties
+# x span total grating: length of the bragg grating
+# x,y,z span bragg: dimensions of each rectangle making up the grating
+# bragg_period: period of bragg grating
+# x,z span core: length, width of the core material
+# y span cladding: y span of the cladding
+# index bragg,core,cladding: refractive index of the structures
+# mat bragg,core,cladding: material of structures
+#
+# Tags: grating fiber bragg fbg reflect transmit dielectric mirror
+#
+# Copyright 2012 Lumerical Solutions Inc
+#####################################################
+
+# simplify variable names by removing spaces
+mat_bragg = %mat bragg%;
+mat_core = %mat core%;
+mat_cladding = %mat cladding%;
+index_bragg = %index bragg%;
+index_core = %index core%;
+index_cladding = %index cladding%;
+bragg_period = %bragg period%;
+x_span_total_grating = %x span total grating%;
+x_span_bragg = %x span bragg%;
+y_span_bragg = %y span bragg%;
+z_span_bragg = %z span bragg%;
+x_span_core = %x span core%;
+z_span_core = %z span core%;
+z_span_cladding = %z span cladding%;
+y_span_cladding = %y span cladding%;
+y_span_core = %y span core%;
+
+x_span_cladding = x_span_core;
+
+# add cladding
+addrect;
+set("name","cladding");
+set("x span",x_span_cladding);
+set("y span",y_span_cladding);
+set("z span",z_span_cladding);
+set("material",mat_cladding);
+if(get("material")=="<Object defined dielectric>")
+{ set("index",index_cladding); } 
+set("override mesh order from material database",1);
+set("mesh order",3);
+set("alpha",0.8);
+
+# add core
+addrect;
+set("name","core");
+set("x span",x_span_core);
+set("y span",y_span_core);
+set("z span",z_span_core);
+set("material",mat_core);
+if(get("material")=="<Object defined dielectric>")
+  { set("index",index_core); } 
+set("override mesh order from material database",1);
+set("mesh order",2);
+set("alpha",0.7);
+
+# add core
+N = round(x_span_total_grating/bragg_period);
+x_span_rounded = bragg_period*N;
+x=linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
+
+for(i=1:N+1) {
+  addrect;
+  set("x",x(i));
+  set("name","bragg");
+  set("x span",x_span_bragg);
+  set("y span",y_span_bragg);
+  set("z span",z_span_bragg);
+  set("material",mat_bragg);
+  if(get("material")=="<Object defined dielectric>")
+    { set("index",index_bragg); } 
+  set("override mesh order from material database",1);
+  set("mesh order",2);
+}
