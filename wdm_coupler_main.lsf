@@ -1,0 +1,41 @@
+newproject; redrawoff;
+filename = "wdm";
+save(filename);
+
+thickness = 220e-9;
+sub_length = 100e-6;
+sub_width = 30e-6;
+
+Clad_Material = 'SiO2 (Glass) - Palik';
+Box_Material = Clad_Material;
+Core_Material = "Si (Silicon) - Palik";
+
+# draw cladding
+addrect; set("name","Clad");  set("material", Clad_Material);
+set("x min", -sub_length/2);
+set("x max", sub_length/2);
+set("y", 0);
+set("y span", sub_width);
+set("z min", 0);
+set("z max", 2e-6);
+set("override mesh order from material database",1);
+set("mesh order",3);  # similar to "send to back", put the cladding as a background.
+set("alpha", 0.2);
+
+# draw buried oxide
+addrect; set("name", "BOX"); set("material", Box_Material);
+set("x min", -sub_length/2);
+set("x max", sub_length/2);
+set("y", 0);
+set("y span", sub_width);
+set("z min", -3e-6); set("z max", 0);
+set("alpha", 0.2);
+
+# draw silicon wafer
+addrect; set("name", "Wafer"); set("material", Core_Material);
+set("x min", -sub_length/2);
+set("x max", sub_length/2);
+set("y", 0);
+set("y span", sub_width);
+set("z min", -6e-6); set("z max", -3e-6);
+set("alpha", 0.1);
