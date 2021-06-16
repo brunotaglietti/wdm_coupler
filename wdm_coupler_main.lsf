@@ -50,9 +50,8 @@ set("z min", -6e-6); set("z max", -3e-6);
 set("alpha", 0.1);
 
 addstructuregroup;
-set("construction group", 1);
 set("x",0);
-set("y", t/2 + + ws/2);
+set("y", t/2 + ws/2);
 set("z",0);
 set("name", "Top SWG Bus");
 adduserprop("mat bragg", 5, Core_Material);
@@ -71,4 +70,5 @@ adduserprop("z span core", 2, thickness);
 adduserprop("y span cladding", 2, ws);
 adduserprop("z span cladding", 2, thickness);
 adduserprop("y span core", 2, ws);
+set("construction group", 1);
 set('script', read("swg_struc.lsf"));
