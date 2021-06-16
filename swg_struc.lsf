@@ -40,29 +40,29 @@ x_span_cladding = x_span_core;
 
 # add cladding
 addrect;
-set("name","cladding");
-set("x span",x_span_cladding);
-set("y span",y_span_cladding);
-set("z span",z_span_cladding);
-set("material",mat_cladding);
-if(get("material")=="<Object defined dielectric>")
-{ set("index",index_cladding); } 
-set("override mesh order from material database",1);
-set("mesh order",8);
-set("alpha",0.8);
+set('name','cladding');
+set('x span',x_span_cladding);
+set('y span',y_span_cladding);
+set('z span',z_span_cladding);
+set('material',mat_cladding);
+if(get('material')=='<Object defined dielectric>')
+{ set('index',index_cladding); }
+set('override mesh order from material database',1);
+set('mesh order',8);
+set('alpha',0.8);
 
 # add core
 addrect;
-set("name","core");
-set("x span",x_span_core);
-set("y span",y_span_core);
-set("z span",z_span_core);
-set("material",mat_core);
-if(get("material")=="<Object defined dielectric>")
-  { set("index",index_core); } 
-set("override mesh order from material database",1);
-set("mesh order",4);
-set("alpha",0.7);
+set('name','core');
+set('x span',x_span_core);
+set('y span',y_span_core);
+set('z span',z_span_core);
+set('material',mat_core);
+if(get('material')=='<Object defined dielectric>')
+  { set('index',index_core); }
+set('override mesh order from material database',1);
+set('mesh order',4);
+set('alpha',0.7);
 
 # add core
 N = round(x_span_total_grating/bragg_period);
@@ -71,14 +71,14 @@ x=linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
 
 for(i=1:N+1) {
   addrect;
-  set("x",x(i));
-  set("name","bragg");
-  set("x span",x_span_bragg);
-  set("y span",y_span_bragg);
-  set("z span",z_span_bragg);
-  set("material",mat_bragg);
-  if(get("material")=="<Object defined dielectric>")
-    { set("index",index_bragg); } 
-  set("override mesh order from material database",1);
-  set("mesh order",4);
+  set('x',x(i));
+  set('name','bragg');
+  set('x span',x_span_bragg);
+  set('y span',y_span_bragg);
+  set('z span',z_span_bragg);
+  set('material',mat_bragg);
+  if(get('material')=='<Object defined dielectric>')
+    { set('index',index_bragg); }
+  set('override mesh order from material database',1);
+  set('mesh order',4);
 }
