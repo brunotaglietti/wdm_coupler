@@ -49,6 +49,7 @@ set("y span", sub_width);
 set("z min", -6e-6); set("z max", -3e-6);
 set("alpha", 0.1);
 
+# Adds the top SWG bus
 addstructuregroup;
 set("x",0);
 set("y", t/2 + ws/2);
@@ -72,3 +73,41 @@ adduserprop("z span cladding", 2, thickness);
 adduserprop("y span core", 2, ws);
 set("construction group", 1);
 set('script', read("swg_struc.lsf"));
+
+# Adds the bottom SWG bus
+addstructuregroup;
+set("x",0);
+set("y", -t/2 - ws/2);
+set("z",0);
+set("name", "Top SWG Bus");
+adduserprop("mat bragg", 5, Core_Material);
+adduserprop("mat core", 5, Clad_Material);
+adduserprop("mat cladding", 5, Clad_Material);
+adduserprop("index bragg", 0, 3.4764);
+adduserprop("index core", 0, 1.4444);
+adduserprop("index cladding", 0, 1.4444);
+adduserprop("bragg period", 2, Lambda);
+adduserprop("x span total grating", 2, Ls);
+adduserprop("x span bragg", 2, a);
+adduserprop("y span bragg", 2, ws);
+adduserprop("z span bragg", 2, thickness);
+adduserprop("x span core", 2, 0);
+adduserprop("z span core", 2, thickness);
+adduserprop("y span cladding", 2, ws);
+adduserprop("z span cladding", 2, thickness);
+adduserprop("y span core", 2, ws);
+set("construction group", 1);
+set('script', read("swg_struc.lsf"));
+
+## Adds the forward facing taper
+addstructuregroup;
+set("x", -Ls/2);
+set("y", -t/2 - ws/2);
+set("z", 0);
+set("name", "Input SWG Taper");
+adduserprop("thickness", 2, thickness);
+adduserprop("length", 2, 6e-6);
+adduserprop("width end", 2, 0);
+adduserprop("width start", 2, 500e-9);
+set("construction group", 1);
+set('script', read("swgtaper_in_struc.lsf"));
