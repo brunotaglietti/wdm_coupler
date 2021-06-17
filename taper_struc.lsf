@@ -17,26 +17,80 @@ deleteall;
 # Copyright 2010 Lumerical Solutions Inc
 ##############################################
 # simplify variable names by removing spaces
-z_span = %z span%;
-y_span = %y span%;
-lx_top = %lx top%;
-lx_base = %lx base%;
+
+taper_h = %thickness%;
+taper_l = %taper length%;
+wg_w = %standard width%;
+width_end = 0;
+swg_w = %SWG width%;
+swg_period = %SWG period%;
 
 V=matrix(4,2);
-#[x,y] points
-V(1,1:2)=[-lx_base/2,-y_span/2];
-V(2,1:2)=[-lx_top/2,y_span/2];
-V(3,1:2)=[lx_top/2,y_span/2];
-V(4,1:2)=[lx_base/2,-y_span/2];
+
+V(1,1:2)=[-taper_l/2,-wg_w/2];
+V(2,1:2)=[-taper_l/2,wg_w/2];
+V(3,1:2)=[taper_l/2,width_end/2];
+V(4,1:2)=[taper_l/2,-width_end/2];
 
 addpoly;
+  set("name", "Si tapered down");
   set("x",0);
   set("y",0);
   set("z",0);
-  set("z span",z_span);
+  set("z span",taper_h);
   set("vertices",V);
-  set("material",material);
-  if(get("material")=="<Object defined dielectric>") 
-    { set("index",index); } 
+  set("material", %core material%);
+  if(get("material")=="<Object defined dielectric>")
+    { set("index",index); }
      set("override mesh order from material database",1);
   set("mesh order",3);
+
+  V(1,1:2)=[-taper_l/2, -(swg_w - wg_w)/2];
+  V(2,1:2)=[-taper_l/2, (swg_w - wg_w)/2];
+  V(3,1:2)=[taper_l/2, width_end/2];
+  V(4,1:2)=[taper_l/2, -width_end/2];
+
+  addpoly;
+    set("name", "SiO2 Tapering SWG - Bottom");
+    set("x",0);
+    set("y", -swg_w/2);
+    set("z",0);
+    set("z span", taper_h);
+    set("vertices",V);
+    set("material",%box material%);
+    if(get("material")=="<Object defined dielectric>")
+      { set("index",index); }
+       set("override mesh order from material database",1);
+    set("mesh order",3);
+
+    addpoly;
+      set("name", "SiO2 Tapering SWG - Top");
+      set("x",0);
+      set("y", swg_w/2);
+      set("z",0);
+      set("z span", taper_h);
+      set("vertices",V);
+      set("material",%box material%);
+      if(get("material")=="<Object defined dielectric>")
+        { set("index",index); }
+         set("override mesh order from material database",1);
+      set("mesh order",3);
+
+      # add core
+      N = round(taper_l/swg_period);
+      x_span_rounded = swg_period*N;
+      x = linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
+
+      for(i=1:N+1) {
+        addrect;
+        set("x",x(i));
+        set("name", "bragg " + num2str(i));
+        set("x span", %x span bragg%);
+        set("y span", swg_w);
+        set("z span", thickness);
+        set("material", %core material%);
+        if(get("material")=="<Object defined dielectric>")
+          { set("index",index_bragg); }
+        set("override mesh order from material database",1);
+        set("mesh order",4);
+      }

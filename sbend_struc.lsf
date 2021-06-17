@@ -1,14 +1,14 @@
 ##########################################################
-# S-bend 
-# This object makes an s-shaped waveguide bend with angled sidewalls.  
-# 
+# S-bend
+# This object makes an s-shaped waveguide bend with angled sidewalls.
+#
 # Input properties
 # base angle: sidewall angle of the waveguide
 # base height: height of the waveguide
 # base width: width of the waveguide base
 # x span: x span of the waveguide
 # y span: y span of the waveguide
-# 
+#
 # Tags: integrated optics waveguide bend ridge
 #
 # Copyright 2015 Lumerical Solutions Inc
@@ -21,8 +21,9 @@ base_height = %base height%;
 x_span = %x span%;
 y_span = %y span%;
 
-selectall;
-set("detail",0.5);
+addwaveguide;
+set("name", "s-wg");
+set("detail", 0.5);
 set("material",material);
 set("base angle",base_angle);
 set("base height",base_height);
