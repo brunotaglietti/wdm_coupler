@@ -1,0 +1,61 @@
+Ansys Lumerical 2021 R1.4 Variational FDTD Solver Version 7.17.2683 (Windows 64bit)
+ expires (month/day/year): 4/23/2022
+using config file: Ansys Licensing set with ANSYSLMD_LICENSE_FILE
+license host: 1055@b32.ece.mcgill.ca
+current time: Tue Jun 29 12:45:49 2021
+Running on host: LAPTOP-860AEGBA
+All processes are communicating and ready to proceed to simulation...
+Running lms file: C:\Program Files\Lumerical\v211\bin\varfdtd-engine-msmpi.exe -t 1 -remote C:/Users/bruno/OneDrive - McGill University/PhD/Devices/WDM Coupler/wdm_coupler/wdm.lms
+Starting meshing
+Simulation size in gridpoints: 1 x 152 x 1
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0.015625 seconds of CPU time
+Starting meshing
+Simulation size in gridpoints: 1 x 152 x 1
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0 seconds of CPU time
+Starting meshing
+Simulation size in gridpoints: 1 x 152 x 1
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 0 seconds of CPU time
+number of processors is 4
+processors are distributed as: 4x1x1
+Running TE Simulation
+Starting meshing
+Simulation size in gridpoints: 1505 x 1726 x 1
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 12.5469 seconds of CPU time
+28488 28488
+Starting meshing
+Simulation size in gridpoints: 1505 x 1726 x 1
+Refined 0 mesh cells (0%)
+Completed meshing!
+Meshing complete in 13.5625 seconds of CPU time
+31176 31176
+finished material properties
+Selected kernel with optimization level: 0 and split-field propagation direction: 0
+-----------------------------------------
+Beginning initialization of TE Simulation
+Starting to add sources to simulation
+Adding TE Mode Source propagating in X
+Starting to add boundary conditions to simulation
+Adding TE PML BC
+Adding TE parallel BC
+Adding TE PML BC
+Adding TE PML BC
+Starting to add monitors to Simulation
+Adding analysis monitor
+Adding TE DFT monitor
+Adding TE DFT monitor
+Adding TE DFT monitor
+Finished initialization of TE Simulation
+-----------------------------------------
+All processes are communicating and ready to proceed to simulation...
+Starting 214127 total iterations
+0% complete. Max time remaining: 4 hrs, 1 min, 4 secs. Auto Shutoff: 1
+1% complete. Max time remaining: 2 hrs, 5 mins, 53 secs. Auto Shutoff: 1
+2% complete. Max time remaining: 2 hrs, 10 mins, 32 secs. Auto Shutoff: 1

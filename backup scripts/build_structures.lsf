@@ -1,0 +1,225 @@
+newproject; redrawoff;
+filename = "wdm";
+save(filename);
+
+thickness = 220e-9;
+substrate_length = 100e-6;
+substrate_width = 30e-6;
+
+wi = 500e-9;
+Ls = 34e-6;
+Lt = 6e-6;
+Lb = 10e-6;
+ws = 1.5e-6;
+Lambda = 200e-9;
+a = 100e-9;
+t = 100e-9;
+
+Clad_Material = 'SiO2 (Glass) - Palik';
+Box_Material = Clad_Material;
+Core_Material = "Si (Silicon) - Palik";
+
+# draw cladding
+addrect;
+set("name","Clad");  set("material", Clad_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", 0);
+set("z max", 2e-6);
+set("override mesh order from material database",1);
+set("mesh order",3);  # similar to "send to back", put the cladding as a background.
+set("alpha", 0.2);
+
+# draw buried oxide
+addrect;
+set("name", "BOX"); set("material", Box_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", -3e-6); set("z max", 0);
+set("alpha", 0.2);
+
+# draw silicon wafer
+addrect;
+set("name", "Wafer"); set("material", Core_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", -6e-6); set("z max", -3e-6);
+set("alpha", 0.1);
+
+# Adds the top SWG bus
+addstructuregroup;
+set("name", "Top SWG Bus");
+set("x",0);
+set("y", t/2 + ws/2);
+set("z",0);
+adduserprop("mat bragg", 5, Core_Material);
+adduserprop("mat core", 5, Clad_Material);
+adduserprop("mat cladding", 5, Clad_Material);
+adduserprop("index bragg", 0, 3.4764);
+adduserprop("index core", 0, 1.4444);
+adduserprop("index cladding", 0, 1.4444);
+adduserprop("bragg period", 2, Lambda);
+adduserprop("x span total grating", 2, Ls);
+adduserprop("x span bragg", 2, a);
+adduserprop("y span bragg", 2, ws);
+adduserprop("z span bragg", 2, thickness);
+adduserprop("x span core", 2, 0);
+adduserprop("z span core", 2, thickness);
+adduserprop("y span cladding", 2, ws);
+adduserprop("z span cladding", 2, thickness);
+adduserprop("y span core", 2, ws);
+set("construction group", 1);
+set('script', read("swg_struc.lsf"));
+
+# Adds the bottom SWG bus
+addstructuregroup;
+set("name", "Top SWG Bus");
+set("x",0);
+set("y", -t/2 - ws/2);
+set("z",0);
+adduserprop("mat bragg", 5, Core_Material);
+adduserprop("mat core", 5, Clad_Material);
+adduserprop("mat cladding", 5, Clad_Material);
+adduserprop("index bragg", 0, 3.4764);
+adduserprop("index core", 0, 1.4444);
+adduserprop("index cladding", 0, 1.4444);
+adduserprop("bragg period", 2, Lambda);
+adduserprop("x span total grating", 2, Ls);
+adduserprop("x span bragg", 2, a);
+adduserprop("y span bragg", 2, ws);
+adduserprop("z span bragg", 2, thickness);
+adduserprop("x span core", 2, 0);
+adduserprop("z span core", 2, thickness);
+adduserprop("y span cladding", 2, ws);
+adduserprop("z span cladding", 2, thickness);
+adduserprop("y span core", 2, ws);
+set("construction group", 1);
+set('script', read("swg_struc.lsf"));
+
+## Adds the forward facing taper
+addstructuregroup;
+set("name", "Input SWG Taper");
+set("x", -Ls/2 - 3e-6);
+set("y", -t/2 - ws/2);
+set("z", 0);
+adduserprop("core material", 5, Core_Material);
+adduserprop("box material", 5, Box_Material);
+adduserprop("thickness", 2, thickness);
+adduserprop("taper length", 2, Lt);
+adduserprop("standard width", 2, wi);
+adduserprop("SWG width", 2, ws);
+adduserprop("SWG period", 2, Lambda);
+adduserprop("x span bragg", 2, a);
+set("construction group", 1);
+set('script', read("taper_struc.lsf"));
+
+## Adds the top output Taper
+addstructuregroup;
+set("name", "Output Top SWG Taper");
+set("x", Ls/2 + 3e-6);
+set("y", t/2 + ws/2);
+set("z", 0);
+adduserprop("core material", 5, Core_Material);
+adduserprop("box material", 5, Box_Material);
+adduserprop("thickness", 2, thickness);
+adduserprop("taper length", 2, Lt);
+adduserprop("standard width", 2, wi);
+adduserprop("SWG width", 2, ws);
+adduserprop("SWG period", 2, Lambda);
+adduserprop("x span bragg", 2, a);
+set("construction group", 1);
+set('script', read("taper_struc.lsf"));
+set("first axis", "y");
+set("rotation 1", 180);
+
+## Adds the top output Taper
+addstructuregroup;
+set("name", "Output Bottom SWG Taper");
+set("x", Ls/2 + 3e-6);
+set("y", -(t + ws)/2);
+set("z", 0);
+adduserprop("core material", 5, Core_Material);
+adduserprop("box material", 5, Box_Material);
+adduserprop("thickness", 2, thickness);
+adduserprop("taper length", 2, Lt);
+adduserprop("standard width", 2, wi);
+adduserprop("SWG width", 2, ws);
+adduserprop("SWG period", 2, Lambda);
+adduserprop("x span bragg", 2, a);
+set("construction group", 1);
+set('script', read("taper_struc.lsf"));
+set("first axis", "y");
+set("rotation 1", 180);
+
+## Adds the top s-bend waveguide
+addstructuregroup;
+set("name", "Top S-bend");
+set("x", Ls/2 + Lt);
+set("y", t/2 + ws/2);
+set("z", 0);
+adduserprop("base angle", 0, 90);
+adduserprop("base width", 2, wi);
+adduserprop("base height", 2, thickness);
+adduserprop("material", 5, Core_Material);
+adduserprop("x span", 2, Lb);
+adduserprop("y span", 2, Lb);
+set("construction group", 1);
+set("script", read("sbend_struc.lsf"));
+
+## Adds the bottom s-bend waveguide
+addstructuregroup;
+set("name", "Bottom S-bend");
+set('x', Ls/2 + Lt + Lb);
+set('y', -(t + ws + Lb)/2);
+set('z', 0);
+adduserprop("base angle", 0, 90);
+adduserprop("base width", 2, wi);
+adduserprop("base height", 2, thickness);
+adduserprop("material", 5, Core_Material);
+adduserprop("x span", 2, Lb);
+adduserprop("y span", 2, Lb);
+set("construction group", 1);
+set("script", read("sbend_struc.lsf"));
+set("first axis", 'z');
+set("rotation 1", -180);
+set("third axis", 'x');
+set("rotation 3", -180);
+
+## WDM Coupler design is finished
+## Adding input and output waveguides
+
+## Adds input waveguide
+addrect;
+set('name', 'Input waveguide');
+set('material', Core_Material);
+set('x min', -substrate_length/2);
+set('x max', -(Ls/2 + Lt));
+set('y min', -(t + ws + wi)/2);
+set('y max', -(t + ws - wi)/2);
+set('z', 0); set('z span', thickness);
+
+## Adds top output waveguide
+addrect;
+set('name', 'Top output waveguide');
+set('material', Core_Material);
+set('x min', Ls/2 + Lt + Lb);
+set('x max', substrate_length/2);
+set('y min', (Lb + t + ws - wi)/2);
+set('y max', (Lb + t + ws + wi)/2);
+set('z', 0); set('z span', thickness);
+
+## Adds bottom output waveguide
+addrect;
+set('name', 'Bottom output waveguide');
+set('material', Core_Material);
+set('x min', Ls/2 + Lt + Lb);
+set('x max', substrate_length/2);
+set('y min', - (Lb + t + ws + wi)/2);
+set('y max', - (Lb + t + ws - wi)/2);
+set('z', 0); set('z span', thickness);
