@@ -48,7 +48,7 @@ set("material",mat_cladding);
 if(get("material")=="<Object defined dielectric>")
 { set("index",index_cladding); }
 set("override mesh order from material database",1);
-set("mesh order",8);
+set("mesh order",4);
 set("alpha",0.8);
 
 # add core
@@ -80,5 +80,5 @@ for(i=1:N+1) {
   if(get("material")=="<Object defined dielectric>")
     { set("index",index_bragg); }
   set("override mesh order from material database",1);
-  set("mesh order",4);
+  set("mesh order",1);
 }

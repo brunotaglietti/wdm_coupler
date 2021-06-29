@@ -43,7 +43,7 @@ addpoly;
   if(get("material")=="<Object defined dielectric>")
     { set("index",index); }
      set("override mesh order from material database",1);
-  set("mesh order",3);
+  set("mesh order",1);
 
   V(1,1:2)=[-taper_l/2, -(swg_w - wg_w)/2];
   V(2,1:2)=[-taper_l/2, (swg_w - wg_w)/2];
@@ -60,8 +60,8 @@ addpoly;
     set("material",%box material%);
     if(get("material")=="<Object defined dielectric>")
       { set("index",index); }
-       set("override mesh order from material database",1);
-    set("mesh order",3);
+       set("override mesh order from material database",2);
+    set("mesh order",2);
 
     addpoly;
       set("name", "SiO2 Tapering SWG - Top");
@@ -73,8 +73,8 @@ addpoly;
       set("material",%box material%);
       if(get("material")=="<Object defined dielectric>")
         { set("index",index); }
-         set("override mesh order from material database",1);
-      set("mesh order",3);
+         set("override mesh order from material database",2);
+      set("mesh order",2);
 
       # add core
       N = round(taper_l/swg_period);
@@ -92,5 +92,5 @@ addpoly;
         if(get("material")=="<Object defined dielectric>")
           { set("index",index_bragg); }
         set("override mesh order from material database",1);
-        set("mesh order",4);
+        set("mesh order",3);
       }

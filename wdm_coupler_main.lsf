@@ -7,7 +7,7 @@ adduserprop("Clad_Material", 5, 'SiO2 (Glass) - Palik');
 adduserprop("Box_Material", 5, 'SiO2 (Glass) - Palik');
 adduserprop("Core_Material", 5, 'Si (Silicon) - Palik');
 adduserprop("wi", 2, 500e-9);
-adduserprop("Ls", 2, 34e-6);
+adduserprop("Lc", 2, 34e-6);
 adduserprop("Lt", 2, 6e-6);
 adduserprop("Lb", 2, 10e-6);
 adduserprop("ws", 2, 1.5e-6);
