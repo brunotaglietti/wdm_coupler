@@ -121,6 +121,7 @@ set("construction group", 1);
 set("script", read("sbend_struc.lsf"));
 
 ## Adds the bottom s-bend waveguide
+# Rotated so that sbend_struc.lsf can be reused
 addstructuregroup;
 set("name", "Bottom S-bend");
 set('x', Lc/2 + Lt + Lb);

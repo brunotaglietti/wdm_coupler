@@ -1,7 +1,11 @@
+## SWG-Based WDM Coupler/Splitter
+
+# Resets the lumerical layout before running
 newproject; redrawoff;
 filename = "wdm";
 save(filename);
 
+# Sets the fundamental parameters as model variables. This way, Solvers can be repositioned as a function of the device's parameters, and sweeps can be performed more freely/broadly.
 setnamed("::model::", "use relative coordinates", 0);
 adduserprop("Clad_Material", 5, 'SiO2 (Glass) - Palik');
 adduserprop("Box_Material", 5, 'SiO2 (Glass) - Palik');
