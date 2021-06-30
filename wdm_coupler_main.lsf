@@ -5,6 +5,19 @@ newproject; redrawoff;
 filename = "wdm";
 save(filename);
 
+setnamed("::model", "analysis script",'
+tx1 = getresult("P1", "T");
+T1 = spline(tx1.T, tx1.lambda, lambda_0);
+tx2 = getresult("P2", "T");
+T2 = spline(tx2.T, tx2.lambda, lambda_0);
+Tcomp = abs(T1-T2);
+');
+setnamed("::model::");
+addanalysisprop("lambda_0", 0, wl0);
+addanalysisresult("T1");
+addanalysisresult("T2");
+addanalysisresult("Tcomp");
+
 # Sets the fundamental parameters as model variables. This way, Solvers can be repositioned as a function of the device's parameters, and sweeps can be performed more freely/broadly.
 setnamed("::model::", "use relative coordinates", 0);
 adduserprop("Clad_Material", 5, 'SiO2 (Glass) - Palik');
@@ -20,3 +33,21 @@ adduserprop("a", 2, 100e-9);
 adduserprop("t", 2, 100e-9);
 adduserprop("thickness", 2, 220e-9);
 setnamed("::model::", "setup script", read("wdm_coupler_layout.lsf"));
+
+addsweep;
+setsweep("sweep", "name", "Length Sweep");
+setsweep("Length Sweep", "number of points", 20);
+
+p1 = struct;
+p1.Name = "Lc";
+p1.Parameter = "::model::Lc";
+p1.Type = "Length";
+p1.Start = 20e-6;
+p1.Stop = 40e-6;
+addsweepparameter("Length Sweep", p1);
+
+r1 = struct;
+r1.Name = "Transmission";
+r1.Result = "::model::T1";
+# r1.Optimize = true;
+addsweepresult("Length Sweep", r1);
