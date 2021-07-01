@@ -105,15 +105,15 @@ set("y span", 3*wi);
 set("wavelength start", wl0 - 1e-9);
 set("wavelength stop", wl0 + 1e-9);
 
-## Top View Power Profile
-addprofile;
-set("name", "Top View Power Profile");
-set("monitor type", "2D Z-normal");
-set("x min", -Lc/2 - Lt);
-set("x max", Lc/2 + Lt);
-set("y", 0);
-set("y span", t + 2*ws + 2e-6);
-set("z", 0);
+# ## Top View Power Profile
+# addprofile;
+# set("name", "Top View Power Profile");
+# set("monitor type", "2D Z-normal");
+# set("x min", -Lc/2 - Lt);
+# set("x max", Lc/2 + Lt);
+# set("y", 0);
+# set("y span", t + 2*ws + 2e-6);
+# set("z", 0);
 
 ## Port 1 Results
 addpower;

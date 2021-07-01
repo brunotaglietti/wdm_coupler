@@ -58,7 +58,7 @@ wdm_coupler_layout;
 
 
 # Sweeping parameters
-Lc_sweep = linspace(20e-6, 40e-6, 5);
+Lc_sweep = linspace(20e-6, 40e-6, 41);
 wl_sweep = [1550e-9, 1310e-9];
 T1 = matrix(length(wl_sweep), length(Lc_sweep));
 T2 = matrix(length(wl_sweep), length(Lc_sweep));
