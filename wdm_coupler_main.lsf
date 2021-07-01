@@ -72,7 +72,7 @@ for(i = 1:length(wl_sweep)){
 
         run;
         runanalysis;
-        T1(1,j) = getresult("::model::", "T1");
-        T2(1,j) = getresult("::model::", "T2");
+        T1(i,j) = getresult("::model::", "T1");
+        T2(i,j) = getresult("::model::", "T2");
     }
 }

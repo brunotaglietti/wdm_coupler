@@ -55,7 +55,7 @@ adduserprop("t", 2, t);
 adduserprop("thickness", 2, thickness);
 set("construction group", 1);
 set('script', read("wdm_coupler_struc.lsf"));
-runsetup;
+
 ## WDM Coupler design is finished
 ## Setting additional waveguides
 
