@@ -75,4 +75,4 @@ for(i = 1:length(wl_sweep)){
         T1(1,j) = getresult("::model::", "T1");
         T2(1,j) = getresult("::model::", "T2");
     }
-# }
+}
