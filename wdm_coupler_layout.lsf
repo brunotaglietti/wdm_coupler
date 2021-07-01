@@ -1,8 +1,4 @@
-deleteall;
-
-# Size of the substrate chip. Should cover much beyond the total device area
-substrate_length = 100e-6;
-substrate_width = 30e-6;
+# deleteall;
 
 ## draw cladding
 addrect;
@@ -46,6 +42,8 @@ set("z",0);
 adduserprop("Clad_Material", 5, 'SiO2 (Glass) - Palik');
 adduserprop("Box_Material", 5, 'SiO2 (Glass) - Palik');
 adduserprop("Core_Material", 5, 'Si (Silicon) - Palik');
+adduserprop("substrate_length", 2, 100e-6);
+adduserprop("substrate_width", 2, 30e-6);
 adduserprop("wi", 2, wi);
 adduserprop("Lc", 2, Lc);
 adduserprop("Lt", 2, Lt);
@@ -57,42 +55,11 @@ adduserprop("t", 2, t);
 adduserprop("thickness", 2, thickness);
 set("construction group", 1);
 set('script', read("wdm_coupler_struc.lsf"));
-
+runsetup;
 ## WDM Coupler design is finished
 ## Setting additional waveguides
 
-## Adds input waveguide
-addrect;
-set('name', 'Input waveguide');
-set('material', Core_Material);
-set('x min', -substrate_length/2);
-set('x max', -(Lc/2 + Lt));
-set('y min', -(t + ws + wi)/2);
-set('y max', -(t + ws - wi)/2);
-set('z', 0); set('z span', thickness);
-
-## Adds top output waveguide
-addrect;
-set('name', 'Top output waveguide');
-set('material', Core_Material);
-set('x min', Lc/2 + Lt + Lb);
-set('x max', substrate_length/2);
-set('y min', (Lb + t + ws - wi)/2);
-set('y max', (Lb + t + ws + wi)/2);
-set('z', 0); set('z span', thickness);
-
-## Adds bottom output waveguide
-addrect;
-set('name', 'Bottom output waveguide');
-set('material', Core_Material);
-set('x min', Lc/2 + Lt + Lb);
-set('x max', substrate_length/2);
-set('y min', - (Lb + t + ws + wi)/2);
-set('y max', - (Lb + t + ws - wi)/2);
-set('z', 0); set('z span', thickness);
-
 # Physical components are finished
-
 ## Adds the FDTD simulation area and parameters
 addvarfdtd;
 set("simulation time", 1.5e-12);
@@ -116,7 +83,6 @@ set("y0", -t/2 - ws/2);
 set("z min bc", "PML");
 set("z max bc", "PML");
 
-
 ## Determines the mesh area
 addmesh;
 set("dx", 0.025e-6);
@@ -136,8 +102,8 @@ set("direction", "forward");
 set("x", -Lc/2 - Lt - 1e-6);
 set("y", -t/2 - ws/2);
 set("y span", 3*wi);
-set("wavelength start", 1.52e-6);
-set("wavelength stop", 1.58e-6);
+set("wavelength start", wl0 - 1e-9);
+set("wavelength stop", wl0 + 1e-9);
 
 ## Top View Power Profile
 addprofile;

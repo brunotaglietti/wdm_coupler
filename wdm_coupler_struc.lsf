@@ -139,3 +139,33 @@ set("first axis", 'z');
 set("rotation 1", -180);
 set("third axis", 'x');
 set("rotation 3", -180);
+
+## Adds input waveguide
+addrect;
+set('name', 'Input waveguide');
+set('material', Core_Material);
+set('x min', -substrate_length/2);
+set('x max', -(Lc/2 + Lt));
+set('y min', -(t + ws + wi)/2);
+set('y max', -(t + ws - wi)/2);
+set('z', 0); set('z span', thickness);
+
+## Adds top output waveguide
+addrect;
+set('name', 'Top output waveguide');
+set('material', Core_Material);
+set('x min', Lc/2 + Lt + Lb);
+set('x max', substrate_length/2);
+set('y min', (Lb + t + ws - wi)/2);
+set('y max', (Lb + t + ws + wi)/2);
+set('z', 0); set('z span', thickness);
+
+## Adds bottom output waveguide
+addrect;
+set('name', 'Bottom output waveguide');
+set('material', Core_Material);
+set('x min', Lc/2 + Lt + Lb);
+set('x max', substrate_length/2);
+set('y min', - (Lb + t + ws + wi)/2);
+set('y max', - (Lb + t + ws - wi)/2);
+set('z', 0); set('z span', thickness);
