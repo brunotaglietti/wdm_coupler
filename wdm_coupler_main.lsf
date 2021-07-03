@@ -65,14 +65,20 @@ T2 = matrix(length(wl_sweep), length(Lc_sweep));
 
 for(i = 1:length(wl_sweep)){
     for(j = 1:length(Lc_sweep)){
+        # Resets the parameters to the current iteration
         switchtolayout;
         setnamed("::model::source", "center wavelength", wl_sweep(i));
         setnamed("::model::source", "wavelength span", 1e-9);
+        setnamed("::model::", "lambda_0", wl_sweep(i));
         setnamed("::model::WDM Coupler", "Lc", Lc_sweep(j));
 
+        # Runs the simulation and grabs results
         run;
         runanalysis;
         T1(i,j) = getresult("::model::", "T1");
         T2(i,j) = getresult("::model::", "T2");
+
+        # Prints progress
+        ?num2str(((i-1)*length(Lc_sweep) + j)/(length(wl_sweep)*length(Lc_sweep))*100) + '%';
     }
 }
