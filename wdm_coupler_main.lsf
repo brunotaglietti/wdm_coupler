@@ -78,4 +78,4 @@ for(i = 1:length(wl_sweep)){
 }
 
 # Saves the results
-matlabsave("./Results/tsweep_2", Lc_sweep, wl_sweep, t_sweep, T1, T2);
+matlabsave("./Results/tsweep_3", Lc_sweep, wl_sweep, t_sweep, T1, T2);
