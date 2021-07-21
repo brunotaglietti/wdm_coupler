@@ -89,6 +89,7 @@ for(i=1:N+1){
     set("x",x(i));
     set("name", "bragg " + num2str(i));
     set("x span", %x span bragg%);
+    set("y", 0);
     set("y span", swg_w);
     set("z span", thickness);
     set("material", %core material%);

@@ -74,6 +74,7 @@ for(i=1:N+1) {
   set("x",x(i));
   set("name","bragg");
   set("x span",x_span_bragg);
+  set("y", 0);
   set("y span",y_span_bragg);
   set("z span",z_span_bragg);
   set("material",mat_bragg);

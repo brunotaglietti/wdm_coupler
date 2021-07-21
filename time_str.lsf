@@ -1,0 +1,34 @@
+#LINUX
+
+## This code generates the string timestr with the date in the following format:
+## YYYY-MM-DD HH:MM:SS
+#fname="cur_time.txt";    # file name to store current time
+#cmd = "echo $(date '+%Y %m %d %H:%M:%S') >"+fname; # system command to get current time and write to fname
+#system(cmd);         # run command to get time and save to file
+
+#cur_time=readdata(fname);     # read time from file
+#rm(fname); timestr = "";
+#for(i=1:3){
+    #timestr = timestr+num2str(cur_time(i))+"-";}
+#timestr = substring(timestr,1,length(timestr)-1) + " ";
+#for(i=4:6){
+    #timestr = timestr + num2str(cur_time(i)) + ":";}
+#?timestr = substring(timestr,1,length(timestr)-1);
+
+
+# WINDOWS
+
+fname="cur_date.txt";    # file name to store current time
+cmd="echo %date% > " + fname; # system command to get current time and write to fname
+system(cmd);         # run command to get time and save to file
+dateV = read(fname);     # read time from file
+dateV = substring(replacestring(dateV,'/','-'), 5);
+
+fname="cur_time.txt";    # file name to store current time
+cmd="echo %time% > " + fname; # system command to get current time and write to fname
+system(cmd);         # run command to get time and save to file
+timeV = read(fname);
+?datestr = substring(dateV,1,length(dateV)-2) + " " + substring(timeV,1,length(timeV)-5);
+
+rm(fname);          # delete time file
+clear(cmd,fname);
