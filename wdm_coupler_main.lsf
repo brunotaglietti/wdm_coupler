@@ -1,7 +1,7 @@
 ## SWG-Based WDM Coupler/Splitter
 
 # Resets the lumerical layout before running
-newproject; redrawoff;
+newproject; redrawoff; time_str;
 filename = "wdm";
 save(filename);
 
@@ -21,8 +21,8 @@ addanalysisresult("T2");
 
 # Sweeping parameters
 wl_sweep = [1550e-9, 1310e-9];
-Lc_sweep = linspace(10e-6, 40e-6, 31);
-t_sweep = [60e-9, 120e-9, 180e-9];
+Lc_sweep = linspace(10e-6, 20e-6, 40);
+t_sweep = [60e-9, 120e-9];
 
 # Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
 if(!exist('T1') & !exist('T2')){
@@ -39,8 +39,8 @@ t = min(t_sweep);
 wi = 500e-9;
 Lt = 6e-6;
 Lb = 10e-6;
-ws = 500e-9;
-ws2 = 1500e-9;
+ws = 735e-9;
+ws2 = 500e-9;
 Lambda = 200e-9;
 a = 100e-9;
 thickness = 220e-9;
@@ -79,4 +79,5 @@ wdm_coupler_layout;
 # }
 #
 # # Saves the results
-# matlabsave("./Results/tsweep_nmatch_" + dateV, Lc_sweep, wl_sweep, t_sweep, T1, T2);
+# filename = "./Results/tsweep_nmatch2";
+# matlabsave(filename, Lc_sweep, wl_sweep, t_sweep, T1, T2);

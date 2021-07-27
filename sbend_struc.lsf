@@ -22,12 +22,12 @@ x_span = %x span%;
 y_span = %y span%;
 
 addwaveguide;
-set("name", "s-wg");
+set("name", "Top S-bend");
 set("detail", 0.5);
-set("material",material);
-set("base angle",base_angle);
-set("base height",base_height);
-set("base width",base_width);
+set("material", Core_Material);
+set("base angle", 90);
+set("base height", thickness);
+set("base width", wi);
 
-select("s-wg");
-set("poles",[0,0;x_span/2,0;x_span/2,y_span/2;x_span,y_span/2]);
+# select("Top S-bend");
+set("poles",[0,0; Lb/2,0; Lb/2, Lb/2; Lb, Lb/2]);

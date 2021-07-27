@@ -1,0 +1,17 @@
+widths = [300:100:1500]*1e-9;
+neffs = matrix(3, length(widths));
+ngs = matrix(3, length(widths));
+
+for(i2 = 1:length(widths)){
+    setnamed("WBG","w1", widths(i2));    
+    runsweep;
+    analyze_bandstructure;
+    neffs(1,i2) = neff_1310;
+    neffs(2,i2) = neff_1550;
+    neffs(3,i2) = neff_2000;
+    ngs(1,i2) = ng_1310;
+    ngs(2,i2) = ng_1550;
+    ngs(3,i2) = ng_2000;
+}
+
+matlabsave('TM_neff_sweep.mat', widths, neffs, ngs);

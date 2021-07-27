@@ -1,145 +1,354 @@
 deleteall;
 
-# Adds the top SWG bus
-addstructuregroup;
-set("name", "Top SWG Bus");
-set("x",0);
-set("y", t/2 + ws/2);
-set("z",0);
-adduserprop("mat bragg", 5, Core_Material);
-adduserprop("mat core", 5, Clad_Material);
-adduserprop("mat cladding", 5, Clad_Material);
-adduserprop("index bragg", 0, 3.4764);
-adduserprop("index core", 0, 1.4444);
-adduserprop("index cladding", 0, 1.4444);
-adduserprop("bragg period", 2, Lambda);
-adduserprop("x span total grating", 2, Lc);
-adduserprop("x span bragg", 2, a);
-adduserprop("y span bragg", 2, ws2);
-adduserprop("z span bragg", 2, thickness);
-adduserprop("x span core", 2, 0);
-adduserprop("z span core", 2, thickness);
-adduserprop("y span cladding", 2, ws2);
-adduserprop("z span cladding", 2, thickness);
-adduserprop("y span core", 2, ws2);
-set("construction group", 1);
-set('script', read("swg_struc.lsf"));
+## Adds the top SWG bus
 
-# Adds the bottom SWG bus
-addstructuregroup;
-set("name", "Bottom SWG Bus");
-set("x",0);
-set("y", -t/2 - ws/2);
-set("z",0);
-adduserprop("mat bragg", 5, Core_Material);
-adduserprop("mat core", 5, Clad_Material);
-adduserprop("mat cladding", 5, Clad_Material);
-adduserprop("index bragg", 0, 3.4764);
-adduserprop("index core", 0, 1.4444);
-adduserprop("index cladding", 0, 1.4444);
-adduserprop("bragg period", 2, Lambda);
-adduserprop("x span total grating", 2, Lc);
-adduserprop("x span bragg", 2, a);
-adduserprop("y span bragg", 2, ws);
-adduserprop("z span bragg", 2, thickness);
-adduserprop("x span core", 2, 0);
-adduserprop("z span core", 2, thickness);
-adduserprop("y span cladding", 2, ws);
-adduserprop("z span cladding", 2, thickness);
-adduserprop("y span core", 2, ws);
-set("construction group", 1);
-set('script', read("swg_struc.lsf"));
+N = round(Lc/Lambda);
+x_span_rounded = Lambda*N;
+x=linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
+
+for(i=1:N+1) {
+  addrect;
+  set("x",x(i));
+  set("name","top SWG " + num2str(i));
+  set("x span",a);
+  set("y", t/2 + ws2/2);
+  set("y span", ws2);
+  set("z span", thickness);
+  set("material", Core_Material);
+  if(get("material")=="<Object defined dielectric>")
+    { set("index",3.4764); }
+  set("override mesh order from material database",1);
+  set("mesh order",1);
+}
+
+## Adds the bottom SWG bus
+
+for(i=1:N+1) {
+  addrect;
+  set("x",x(i));
+  set("name","Bottom SWG " + num2str(i));
+  set("x span", a);
+  set("y", -t/2 - ws/2);
+  set("y span", ws);
+  set("z span", thickness);
+  set("material", Core_Material);
+  if(get("material")=="<Object defined dielectric>")
+    { set("index",3.4764); }
+  set("override mesh order from material database",1);
+  set("mesh order",1);
+}
 
 ## Adds the forward facing taper
-addstructuregroup;
-set("name", "Input SWG Taper");
-set("x", -Lc/2 - 3e-6);
-set("y", -t/2 - ws/2);
-set("z", 0);
-adduserprop("core material", 5, Core_Material);
-adduserprop("box material", 5, Box_Material);
-adduserprop("thickness", 2, thickness);
-adduserprop("taper length", 2, Lt);
-adduserprop("standard width", 2, wi);
-adduserprop("SWG width", 2, ws);
-adduserprop("SWG period", 2, Lambda);
-adduserprop("x span bragg", 2, a);
-set("construction group", 1);
-set('script', read("taper_struc.lsf"));
+# Adding the tapering down Si waveguide
 
-## Adds the top output Taper
-addstructuregroup;
-set("use relative coordinates", 0);
-set("name", "Output Top SWG Taper");
-set("x", Lc/2 + 3e-6);
-set("y", t*2 + ws2/2);
-set("z", 0);
-adduserprop("core material", 5, Core_Material);
-adduserprop("box material", 5, Box_Material);
-adduserprop("thickness", 2, thickness);
-adduserprop("taper length", 2, Lt);
-adduserprop("standard width", 2, wi);
-adduserprop("SWG width", 2, ws2);
-adduserprop("SWG period", 2, Lambda);
-adduserprop("x span bragg", 2, a);
-set("construction group", 1);
-set('script', read("taper_struc.lsf"));
-set("first axis", "y");
-set("rotation 1", 180);
+x0 = -Lc/2 - Lt/2;
+y0 = -t/2 - ws/2;
+z0 = 0;
 
-## Adds the top output Taper
-addstructuregroup;
-set("name", "Output Bottom SWG Taper");
-set("x", Lc/2 + 3e-6);
-set("y", -(t + ws)/2);
-set("z", 0);
-adduserprop("core material", 5, Core_Material);
-adduserprop("box material", 5, Box_Material);
-adduserprop("thickness", 2, thickness);
-adduserprop("taper length", 2, Lt);
-adduserprop("standard width", 2, wi);
-adduserprop("SWG width", 2, ws);
-adduserprop("SWG period", 2, Lambda);
-adduserprop("x span bragg", 2, a);
-set("construction group", 1);
-set('script', read("taper_struc.lsf"));
-set("first axis", "y");
-set("rotation 1", 180);
+width_end = 0;
+V=matrix(4,2);
+V(1,1:2)=[-Lt/2 - a/2, - wi/2];
+V(2,1:2)=[-Lt/2 - a/2, wi/2];
+V(3,1:2)=[Lt/2, width_end/2];
+V(4,1:2)=[Lt/2, -width_end/2];
 
-## Adds the top s-bend waveguide
-addstructuregroup;
+addpoly;
+set("name", "Si taper - Input");
+set("x", x0);
+set("y", y0);
+set("z", z0);
+set("z span",thickness);
+set("vertices",V);
+set("material", Core_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",1);
+set("mesh order",1);
+
+# Ads the overwritting dioxide triangle at the bottom of the taper
+
+V(1,1:2)=[-Lt/2 - a/2, 0];
+V(2,1:2)=[-Lt/2 - a/2, (ws - wi)/2];
+V(3,1:2)=[Lt/2, width_end/2];
+V(4,1:2)=[Lt/2, -width_end/2];
+
+addpoly;
+set("name", "SiO2 Taper - Input Bottom");
+set("x", x0);
+set("y", y0 - ws/2);
+set("z", z0);
+set("z span", thickness);
+set("vertices",V);
+set("material",Box_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",2);
+set("mesh order",2);
+
+# Ads the overwritting dioxide triangle at the top of the taper
+
+V(1,1:2)=[-Lt/2 - a/2, -(ws - wi)/2];
+V(2,1:2)=[-Lt/2 - a/2, 0];
+V(3,1:2)=[Lt/2, width_end/2];
+V(4,1:2)=[Lt/2, -width_end/2];
+
+addpoly;
+set("name", "SiO2 Taper - Input Top");
+set("x", x0);
+set("y", y0 + ws/2);
+set("z", z0);
+set("z span", thickness);
+set("vertices",V);
+set("material", Box_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",2);
+set("mesh order",2);
+
+# Adds the taper SWG
+
+N = round(Lt/Lambda);
+x_span_rounded = Lambda*N;
+xi = x0 + linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
+
+for(i=1:N){
+    addrect;
+    set("x", xi(i));
+    set("name", "Input taper SWG " + num2str(i));
+    set("x span", a);
+    set("y", y0);
+    set("y span", ws);
+    set("z span", thickness);
+    set("material", Core_Material);
+    if(get("material")=="<Object defined dielectric>"){
+        set("index",index_bragg);
+    }
+    set("override mesh order from material database",1);
+    set("mesh order",3);
+}
+
+## Adds the Bottom output Taper
+# Adding the Si tapering up waveguide
+
+x0 = Lc/2 + Lt/2;
+y0 = -t/2 - ws/2;
+z0 = 0;
+
+width_end = 0;
+V=matrix(4,2);
+V(1,1:2) = [-Lt/2 - a/2, width_end/2];
+V(2,1:2) = [-Lt/2 - a/2, -width_end/2];
+V(3,1:2) = [Lt/2, wi/2];
+V(4,1:2) = [Lt/2, - wi/2];
+
+addpoly;
+set("name", "Si taper - output 2");
+set("x", x0);
+set("y", y0);
+set("z", z0);
+set("z span", thickness);
+set("vertices", V);
+set("material", Core_Material);
+if(get("material") == "<Object defined dielectric>"){
+    set("index", index);
+}
+set("override mesh order from material database", 1);
+set("mesh order", 1);
+
+# Ads the overwritting dioxide triangle at the bottom of the taper
+
+V(1,1:2) = [-Lt/2 - a/2, width_end/2];
+V(2,1:2) = [-Lt/2 - a/2, -width_end/2];
+V(3,1:2) = [Lt/2, 0];
+V(4,1:2) = [Lt/2, (ws - wi)/2];
+
+addpoly;
+set("name", "SiO2 Taper - Output 2 Bottom");
+set("x", x0);
+set("y", y0 - ws/2);
+set("z", z0);
+set("z span", thickness);
+set("vertices",V);
+set("material",Box_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",2);
+set("mesh order",2);
+
+# Ads the overwritting dioxide triangle at the top of the taper
+
+V(1,1:2) = [-Lt/2 - a/2, width_end/2];
+V(2,1:2) = [-Lt/2 - a/2, -width_end/2];
+V(3,1:2) = [Lt/2, -(ws - wi)/2];
+V(4,1:2) = [Lt/2, 0];
+
+addpoly;
+set("name", "SiO2 Taper - Output 2 Top");
+set("x", x0);
+set("y", y0 + ws/2);
+set("z", z0);
+set("z span", thickness);
+set("vertices",V);
+set("material", Box_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",2);
+set("mesh order",2);
+
+# Adds the taper SWG
+N = round(Lt/Lambda);
+x_span_rounded = Lambda*N;
+xi = x0 + linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
+
+for(i=2:N){
+    addrect;
+    set("x",xi(i));
+    set("name", "Output 2 taper SWG " + num2str(i));
+    set("x span", a);
+    set("y", y0);
+    set("y span", ws);
+    set("z span", thickness);
+    set("material", Core_Material);
+    if(get("material")=="<Object defined dielectric>"){
+        set("index",index_bragg);
+    }
+    set("override mesh order from material database",1);
+    set("mesh order",3);
+}
+
+
+## Adds the Top output Taper
+# Adding the Si tapering up waveguide
+
+x0 = Lc/2 + Lt/2;
+y0 = t/2 + ws2/2;
+z0 = 0;
+
+width_end = 0;
+V(1,1:2) = [-Lt/2 - a/2, width_end/2];
+V(2,1:2) = [-Lt/2 - a/2, -width_end/2];
+V(3,1:2) = [Lt/2, wi/2];
+V(4,1:2) = [Lt/2, - wi/2];
+
+addpoly;
+set("name", "Si taper - output 1");
+set("x", x0);
+set("y", y0);
+set("z", z0);
+set("z span",thickness);
+set("vertices",V);
+set("material", Core_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",1);
+set("mesh order",1);
+
+# Ads the overwritting dioxide triangle at the bottom of the taper
+
+V(1,1:2) = [-Lt/2 - a/2, width_end/2];
+V(2,1:2) = [-Lt/2 - a/2, -width_end/2];
+V(3,1:2) = [Lt/2, 0];
+V(4,1:2) = [Lt/2, (ws2 - wi)/2];
+
+addpoly;
+set("name", "SiO2 Taper - Output 1 Bottom");
+set("x", x0);
+set("y", y0 - ws2/2);
+set("z", z0);
+set("z span", thickness);
+set("vertices",V);
+set("material",Box_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",2);
+set("mesh order",2);
+
+# Ads the overwritting dioxide triangle at the top of the taper
+
+V(1,1:2) = [-Lt/2 - a/2, width_end/2];
+V(2,1:2) = [-Lt/2 - a/2, -width_end/2];
+V(3,1:2) = [Lt/2, -(ws2 - wi)/2];
+V(4,1:2) = [Lt/2, 0];
+
+addpoly;
+set("name", "SiO2 Taper - Output 1 Top");
+set("x", x0);
+set("y", y0 + ws2/2);
+set("z", z0);
+set("z span", thickness);
+set("vertices",V);
+set("material", Box_Material);
+if(get("material")=="<Object defined dielectric>"){
+    set("index",index);
+}
+set("override mesh order from material database",2);
+set("mesh order",2);
+
+# Adds the taper SWG
+?N = round(Lt/Lambda);
+?x_span_rounded = Lambda*N;
+xi = x0 + linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
+
+for(i=2:N){
+    addrect;
+    set("x",xi(i));
+    set("name", "Output 1 taper SWG " + num2str(i));
+    set("x span", a);
+    set("y", y0);
+    set("y span", ws2);
+    set("z span", thickness);
+    set("material", Core_Material);
+    if(get("material")=="<Object defined dielectric>"){
+        set("index",index_bragg);
+    }
+    set("override mesh order from material database",1);
+    set("mesh order",3);
+}
+
+# ## Adds the top s-bend waveguide
+
+x0 = Lc/2 + Lt;
+y0 = t/2 + ws2/2;
+z0 = 0;
+
+addwaveguide;
 set("name", "Top S-bend");
-set("x", Lc/2 + Lt);
-set("y", t*2 + ws2/2);
-set("z", 0);
-adduserprop("base angle", 0, 90);
-adduserprop("base width", 2, wi);
-adduserprop("base height", 2, thickness);
-adduserprop("material", 5, Core_Material);
-adduserprop("x span", 2, Lb);
-adduserprop("y span", 2, Lb);
-set("construction group", 1);
-set("script", read("sbend_struc.lsf"));
+set("x", x0);
+set("y", y0);
+set("z", z0);
+set("detail", 0.5);
+set("material", Core_Material);
+set("base angle", 90);
+set("base height", thickness);
+set("base width", wi);
+# select("Top S-bend");
+set("poles",[0,0; Lb/2,0; Lb/2, (Lb - ws2 - t)/2; Lb, (Lb - ws2 - t)/2]);
 
 ## Adds the bottom s-bend waveguide
-# Rotated so that sbend_struc.lsf can be reused
-addstructuregroup;
+
+x0 = Lc/2 + Lt;
+y0 = -t/2 - ws/2;
+z0 = 0;
+
+addwaveguide;
 set("name", "Bottom S-bend");
-set('x', Lc/2 + Lt + Lb);
-set('y', -(t + ws + Lb)/2);
-set('z', 0);
-adduserprop("base angle", 0, 90);
-adduserprop("base width", 2, wi);
-adduserprop("base height", 2, thickness);
-adduserprop("material", 5, Core_Material);
-adduserprop("x span", 2, Lb);
-adduserprop("y span", 2, Lb);
-set("construction group", 1);
-set("script", read("sbend_struc.lsf"));
-set("first axis", 'z');
-set("rotation 1", -180);
-set("third axis", 'x');
-set("rotation 3", -180);
+set("x", x0);
+set("y", y0);
+set("z", z0);
+set("detail", 0.5);
+set("material", Core_Material);
+set("base angle", 90);
+set("base height", thickness);
+set("base width", wi);
+# select("Top S-bend");
+set("poles",[0,0; Lb/2,0; Lb/2, -(Lb - ws - t)/2; Lb, -(Lb - ws - t)/2]);
 
 ## Adds input waveguide
 addrect;
@@ -157,8 +366,8 @@ set('name', 'Top output waveguide');
 set('material', Core_Material);
 set('x min', Lc/2 + Lt + Lb);
 set('x max', substrate_length);
-set('y min', (Lb + t + ws - wi)/2);
-set('y max', (Lb + t + ws + wi)/2);
+set('y', Lb/2);
+set('y span', wi);
 set('z', 0); set('z span', thickness);
 
 ## Adds bottom output waveguide
@@ -167,6 +376,6 @@ set('name', 'Bottom output waveguide');
 set('material', Core_Material);
 set('x min', Lc/2 + Lt + Lb);
 set('x max', substrate_length);
-set('y min', - (Lb + t + ws + wi)/2);
-set('y max', - (Lb + t + ws - wi)/2);
+set('y', -Lb/2);
+set('y span', wi);
 set('z', 0); set('z span', thickness);

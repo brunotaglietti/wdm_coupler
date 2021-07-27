@@ -1,0 +1,37 @@
+####################################################################
+# Scriptfile:update_litho_simulation.lsf
+#
+# Description: This file can be used to create a litho simulated
+# version of a 2D profile.
+#p
+# Copyright 2015, Lumerical Solutions, Inc.
+####################################################################
+
+####################################################################
+# USER SETUP AND PARAMETERS
+# user parameters
+gds_export_filename = "litho.gds"; # will export the litho simulated structure to this file
+gds_export_cell_name = "litho"; # cell name used for export
+gds_export_layer_number = 5; # layer number used for export
+original_group_name = "WBG"; # name of group with original structure
+litho_group_name = "Litho_simulated"; # name of group with litho structure
+litho_index_monitor = "litho_index_monitor"; # name of 2D, x-y monitor through middle of desired layer
+litho_mesh_override = "litho_mesh"; # set to an empty string ("") to disable
+target_dx = 2e-9; # Be careful, do not set too small initially
+target_raster_size = 2000; # Will run faster with larger values but may run out of memory
+litho_lambda = 193e-9; # from lithography system
+litho_NA = 0.9; # from lithography system
+dephocus = 0e-9; # distance from focal plane, positive means past the focal plane, SI UNITS 
+resist_threshold = 0.2; # relative to peak intensity at image
+material = "Si (Silicon) - Dispersive & Lossless"; # material for litho simulated structure
+zmin = 0; # min and max of the final layer
+zmax = 220e-9;
+periodic = true; # set true for periodic structures
+anti_periodic_buffer_region = litho_lambda; # used only for non-periodic structures
+extend_anti_periodic_structures = false;
+periodic_buffer_region = 200e-9; # used only for periodic structures
+
+# END USER SETUP
+####################################################################
+
+litho_worker_script;
