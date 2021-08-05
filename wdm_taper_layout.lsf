@@ -1,0 +1,180 @@
+newproject; redrawoff; time_str;
+filename = "wdm_taper";
+save(filename);
+
+wl0 = 1550e-9;
+
+Lt = 15e-6;
+wi = 500e-9;
+ws = 1500e-9;
+Lambda = 200e-9;
+a = 100e-9;
+thickness = 220e-9;
+substrate_width = 8*ws;
+substrate_length = 2*Lt;
+Clad_Material = 'SiO2 (Glass) - Palik';
+Box_Material = 'SiO2 (Glass) - Palik';
+Core_Material = 'Si (Silicon) - Palik';
+
+# Sets up the analysis scripts for figure of merit
+setnamed("::model", "analysis script",'
+tx1 = getresult("Output", "T");
+T = spline(tx1.T, tx1.lambda, lambda_0);
+');
+setnamed("::model::");
+addanalysisprop("lambda_0", 0, wl0);
+addanalysisresult("T");
+
+## draw cladding
+addrect;
+set("name","Clad");  set("material", Clad_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", 0);
+set("z max", 2e-6);
+set("override mesh order from material database",1);
+set("mesh order",3);  # similar to "send to back", put the cladding as a background.
+set("alpha", 0.3);
+
+## draw buried oxide
+addrect;
+set("name", "BOX"); set("material", Box_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", -3e-6); set("z max", 0);
+set("override mesh order from material database",1);
+set("mesh order",3);  # similar to "send to back", put the cladding as a background.
+set("alpha", 0.3);
+
+## draw silicon wafer
+addrect;
+set("name", "Wafer"); set("material", Core_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", -6e-6); set("z max", -3e-6);
+set("alpha", 0.3);
+
+# Adds the taper
+addstructuregroup;
+set("name", "SWG taper");
+set("x",0);
+set("y", 0);
+set("z",0);
+adduserprop("Clad_Material", 5, 'SiO2 (Glass) - Palik');
+adduserprop("Box_Material", 5, 'SiO2 (Glass) - Palik');
+adduserprop("Core_Material", 5, 'Si (Silicon) - Palik');
+adduserprop("substrate_length", 2, substrate_length);
+adduserprop("wi", 2, wi);
+adduserprop("Lt", 2, Lt);
+adduserprop("ws", 2, ws);
+adduserprop("Lambda", 2, Lambda);
+adduserprop("a", 2, a);
+adduserprop("width_end", 2, 0);
+adduserprop("thickness", 2, thickness);
+set("construction group", 1);
+set('script', read("wdm_taper_struc.lsf"));
+
+## SWG taper design is finished
+## Setting additional waveguides
+
+# Physical components are finished
+## Adds the FDTD simulation area and parameters
+
+if(fileextension(currentfilename) == "lms"){
+    addvarfdtd;
+    set("test points", [-Lt/4, ws; Lt/4, ws; -Lt/4, -ws; Lt/4, -ws]);
+    set("x0", 0);
+    set("y0", 0);
+    set("bandwidth", "broadband");
+    set("maximum number of materials", 100);
+    set("number of samples", 20);
+    set("max coefficients", 3);
+    set("fit tolerance", 0.01);
+    set("imaginary weight", 1);
+    set("improve stability", 1);
+    set("make fit passive", 1);
+} else {
+    addfdtd;
+}
+    set("simulation time", 1.5e-12);
+    set("x min", -substrate_length/2 + 1e-6);
+    set("x max", substrate_length/2 - 1e-6);
+    set("y", 0);
+    set("y span", 4*ws);
+    set("z", 0);
+    set("z span", 3*thickness);
+    set("z min bc", "PML");
+    set("z max bc", "PML");
+
+    ## Determines the mesh area
+    addmesh;
+    set("dx", 0.015e-6);
+    set("dy", 0.015e-6);
+    set("dz", 0.015e-6);
+    set("x min", -substrate_length/2 + 1e-6);
+    set("x max", substrate_length/2 - 1e-6);
+    set("y", 0);
+    set("y span", 4*ws);
+    set("z", 0);
+    set("z span", 3*thickness);
+
+    ## Adds the source
+    if(fileextension(currentfilename) == "lms"){
+        addmodesource;
+    } else {
+        addmode;
+        set("z", 0);
+        set("z span", 3*thickness);
+    }
+    set("injection axis", "x-axis");
+    set("direction", "forward");
+    set("x", -substrate_length/2 + 2e-6);
+    set("y", 0);
+    set("y span", 4*wi);
+    set("wavelength start", wl0 - 1e-9);
+    set("wavelength stop", wl0 + 1e-9);
+
+    ## Top View Power Profile
+    addprofile;
+    set("name", "Top View Power Profile");
+    set("monitor type", "2D Z-normal");
+    set("x min", -substrate_length/2 + 2e-6);
+    set("x max", substrate_length/2 - 2e-6);
+    set("y", 0);
+    set("y span", 3*ws);
+    set("z", 0);
+
+    ## Output Port Results
+    addpower;
+    set("name", "Output");
+    set("monitor type", "2D X-normal");
+    set("x", substrate_length/2 - 2e-6);
+    set("y", 0);
+    set("y span", 3*ws);
+    set("z", 0);
+    set("z span", 3*thickness);
+
+
+## Setting the Parameter sweep
+addsweep;
+setsweep("sweep","name", "L_sweep");
+setsweep("L_sweep", "Type", "Ranges");
+setsweep("L_sweep", "Number of points", 15);
+
+P = struct;
+P.Parameter = "::model::SWG taper::Lt";
+P.Type = "Length";
+P.Start = 1e-6;
+P.Stop = 15e-6;
+addsweepparameter("L_sweep", P);
+
+R = struct;
+R.Name = "Transmission";
+R.Result = "::model::T";
+addsweepresult("L_sweep", R);

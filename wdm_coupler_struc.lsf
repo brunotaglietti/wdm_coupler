@@ -221,7 +221,6 @@ for(i=2:N){
     set("mesh order",3);
 }
 
-
 ## Adds the Top output Taper
 # Adding the Si tapering up waveguide
 

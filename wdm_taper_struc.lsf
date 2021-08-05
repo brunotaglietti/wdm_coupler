@@ -25,12 +25,22 @@ deleteall;
 # ws = %SWG width%;
 # Lambda = %SWG period%;
 
+## Taper layout
+# Input waveguide
+addrect;
+set("name", "Input waveguide");
+set("material", Core_Material);
+set("x min", -substrate_length/2);
+set("x max", -Lt/2);
+set("y", 0); set("y span", wi);
+set("z", 0); set("z span", thickness);
+
 V=matrix(4,2);
 
-V(1,1:2)=[-Lt/2,-wi/2];
-V(2,1:2)=[-Lt/2,wi/2];
-V(3,1:2)=[Lt/2,width_end/2];
-V(4,1:2)=[Lt/2,-width_end/2];
+V(1,1:2)=[-Lt/2 - a/2, - wi/2];
+V(2,1:2)=[-Lt/2 - a/2, wi/2];
+V(3,1:2)=[Lt/2, width_end/2];
+V(4,1:2)=[Lt/2, -width_end/2];
 
 addpoly;
 set("name", "Si tapered down");
@@ -46,8 +56,8 @@ if(get("material")=="<Object defined dielectric>"){
 set("override mesh order from material database",1);
 set("mesh order",1);
 
-V(1,1:2)=[-Lt/2, -(ws - wi)/2];
-V(2,1:2)=[-Lt/2, (ws - wi)/2];
+V(1,1:2)=[-Lt/2 - a/2, 0];
+V(2,1:2)=[-Lt/2 - a/2, (ws - wi)/2];
 V(3,1:2)=[Lt/2, width_end/2];
 V(4,1:2)=[Lt/2, -width_end/2];
 
@@ -65,6 +75,11 @@ if(get("material")=="<Object defined dielectric>"){
 set("override mesh order from material database",2);
 set("mesh order",2);
 
+V(1,1:2)=[-Lt/2 - a/2, -(ws - wi)/2];
+V(2,1:2)=[-Lt/2 - a/2, 0];
+V(3,1:2)=[Lt/2, width_end/2];
+V(4,1:2)=[Lt/2, -width_end/2];
+
 addpoly;
 set("name", "SiO2 Tapering SWG - Top");
 set("x",0);
@@ -79,10 +94,11 @@ if(get("material")=="<Object defined dielectric>"){
 set("override mesh order from material database",2);
 set("mesh order",2);
 
-# add core
-N = round(Lt/Lambda);
+# add SWG
+Lc = (substrate_length - Lt)/2;
+N = round((Lt + Lc)/Lambda);
 x_span_rounded = Lambda*N;
-x = linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
+x = Lc/2 + linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
 
 for(i=1:N+1){
     addrect;

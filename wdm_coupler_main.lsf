@@ -21,8 +21,8 @@ addanalysisresult("T2");
 
 # Sweeping parameters
 wl_sweep = [1550e-9, 1310e-9];
-Lc_sweep = linspace(10e-6, 20e-6, 40);
-t_sweep = [60e-9, 120e-9];
+Lc_sweep = linspace(10e-6, 24.75e-6, 61);
+t_sweep = [60e-9, 100e-9];
 
 # Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
 if(!exist('T1') & !exist('T2')){
@@ -39,8 +39,8 @@ t = min(t_sweep);
 wi = 500e-9;
 Lt = 6e-6;
 Lb = 10e-6;
-ws = 735e-9;
-ws2 = 500e-9;
+ws = 1000e-9;
+ws2 = 1000e-9;
 Lambda = 200e-9;
 a = 100e-9;
 thickness = 220e-9;
@@ -51,33 +51,33 @@ substrate_width = 30e-6;
 ## Running the layout scripts
 wdm_coupler_layout;
 
-# for(i = 1:length(wl_sweep)){
-#     for(j = 1:length(Lc_sweep)){
-#         for(k = 1:length(t_sweep)){
-#             if(T1(i,j,k) == 0){ # checks if the iteration was already done
-#                 # Sets the parameters to the current iteration
-#                 switchtolayout;
-#                 setnamed("::model::source", "center wavelength", wl_sweep(i));
-#                 setnamed("::model::source", "wavelength span", 1e-9);
-#                 setnamed("::model::", "lambda_0", wl_sweep(i));
-#                 setnamed("::model::WDM Coupler", "Lc", Lc_sweep(j));
-#                 setnamed("::model::WDM Coupler", "t", t_sweep(k));
-#
-#                 # Runs the simulation and grabs results
-#                 run;
-#                 runanalysis;
-#                 T1(i,j,k) = getresult("::model::", "T1");
-#                 T2(i,j,k) = getresult("::model::", "T2");
-#
-#                 # Prints progress
-#                 ?num2str((k + (j-1)*length(t_sweep) + (i-1)*length(Lc_sweep)*length(t_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(t_sweep))*100) + '%';
-#             } else {
-#                 ?num2str((k + (j-1)*length(t_sweep) + (i-1)*length(Lc_sweep)*length(t_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(t_sweep))*100) + '% skipped!';
-#             }
-#         }
-#     }
-# }
-#
-# # Saves the results
-# filename = "./Results/tsweep_nmatch2";
-# matlabsave(filename, Lc_sweep, wl_sweep, t_sweep, T1, T2);
+for(i = 1:length(wl_sweep)){
+    for(j = 1:length(Lc_sweep)){
+        for(k = 1:length(t_sweep)){
+            if(T1(i,j,k) == 0){ # checks if the iteration was already done
+                # Sets the parameters to the current iteration
+                switchtolayout;
+                setnamed("::model::source", "center wavelength", wl_sweep(i));
+                setnamed("::model::source", "wavelength span", 1e-9);
+                setnamed("::model::", "lambda_0", wl_sweep(i));
+                setnamed("::model::WDM Coupler", "Lc", Lc_sweep(j));
+                setnamed("::model::WDM Coupler", "t", t_sweep(k));
+
+                # Runs the simulation and grabs results
+                run;
+                runanalysis;
+                T1(i,j,k) = getresult("::model::", "T1");
+                T2(i,j,k) = getresult("::model::", "T2");
+
+                # Prints progress
+                ?num2str((k + (j-1)*length(t_sweep) + (i-1)*length(Lc_sweep)*length(t_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(t_sweep))*100) + '%';
+            } else {
+                ?num2str((k + (j-1)*length(t_sweep) + (i-1)*length(Lc_sweep)*length(t_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(t_sweep))*100) + '% skipped!';
+            }
+        }
+    }
+}
+
+# Saves the results
+filename = "./Results/tsweep_5";
+matlabsave(filename, Lc_sweep, wl_sweep, t_sweep, T1, T2, ws, ws2, a);

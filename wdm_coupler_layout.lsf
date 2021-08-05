@@ -21,6 +21,8 @@ set("x max", substrate_length/2);
 set("y", 0);
 set("y span", substrate_width);
 set("z min", -3e-6); set("z max", 0);
+set("override mesh order from material database",1);
+set("mesh order",3);  # similar to "send to back", put the cladding as a background.
 set("alpha", 0.3);
 
 ## draw silicon wafer
@@ -106,15 +108,15 @@ set("y span", 6*wi);
 set("wavelength start", wl0 - 1e-9);
 set("wavelength stop", wl0 + 1e-9);
 
-# ## Top View Power Profile
-# addprofile;
-# set("name", "Top View Power Profile");
-# set("monitor type", "2D Z-normal");
-# set("x min", -Lc/2 - Lt);
-# set("x max", Lc/2 + Lt);
-# set("y", 0);
-# set("y span", t + 2*ws + 2e-6);
-# set("z", 0);
+## Top View Power Profile
+addprofile;
+set("name", "Top View Power Profile");
+set("monitor type", "2D Z-normal");
+set("x min", -Lc/2 - Lt -2e-6);
+set("x max", Lc/2 + Lt + 2e-6);
+set("y", 0);
+set("y span", t + 2*ws + 2e-6);
+set("z", 0);
 
 ## Port 1 Results
 addpower;
