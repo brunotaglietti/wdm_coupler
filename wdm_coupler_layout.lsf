@@ -54,7 +54,7 @@ adduserprop("ws", 2, ws);
 adduserprop("ws2", 2, ws2);
 adduserprop("Lambda", 2, Lambda);
 adduserprop("a", 2, a);
-adduserprop("t", 2, t);
+adduserprop("g", 2, g);
 adduserprop("thickness", 2, thickness);
 set("construction group", 1);
 set('script', read("wdm_coupler_struc.lsf"));
@@ -69,7 +69,7 @@ set("simulation time", 1.5e-12);
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
-set("y span", 2*ws + t + Lb + 4e-6);
+set("y span", 2*ws + g + Lb + 4e-6);
 set("z", 0);
 set("z span", 3*thickness);
 set("bandwidth", "broadband");
@@ -82,7 +82,7 @@ set("improve stability", 1);
 set("make fit passive", 1);
 set("test points", [-Lc/4, 2*ws; Lc/4, 2*ws; -Lc/4, -2*ws; Lc/4, -2*ws]);
 set("x0", 0);
-set("y0", -t/2 - ws/2);
+set("y0", -g/2 - ws/2);
 set("z min bc", "PML");
 set("z max bc", "PML");
 
@@ -94,7 +94,7 @@ set("dz", 0.025e-6);
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
-set("y span", 2*ws + t + Lb + 4e-6);
+set("y span", 2*ws + g + Lb + 4e-6);
 set("z", 0);
 set("z span", 3*thickness);
 
@@ -103,10 +103,10 @@ addmodesource;
 set("injection axis", "x-axis");
 set("direction", "forward");
 set("x", -Lc/2 - Lt - 1e-6);
-set("y", -t/2 - ws/2);
+set("y", -g/2 - ws/2);
 set("y span", 6*wi);
-set("wavelength start", wl0 - 1e-9);
-set("wavelength stop", wl0 + 1e-9);
+set("wavelength start", 1310e-9);
+set("wavelength stop", 1550e-9);
 
 ## Top View Power Profile
 addprofile;
@@ -115,7 +115,7 @@ set("monitor type", "2D Z-normal");
 set("x min", -Lc/2 - Lt -2e-6);
 set("x max", Lc/2 + Lt + 2e-6);
 set("y", 0);
-set("y span", t + 2*ws + 2e-6);
+set("y span", g + 2*ws + 2e-6);
 set("z", 0);
 
 ## Port 1 Results
@@ -134,6 +134,6 @@ set("name", "P2");
 set("monitor type", "2D X-normal");
 set("x", Lc/2 + Lt + Lb + 1e-6);
 set("y", -Lb/2);
-set("y span", 3*(wi+t));
+set("y span", 3*(wi+g));
 set("z", 0);
 set("z span", 3*thickness);

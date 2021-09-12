@@ -8,10 +8,10 @@ x=linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
 
 for(i=1:N+1) {
   addrect;
-  set("x",x(i));
+  set("x", x(i));
   set("name","top SWG " + num2str(i));
   set("x span",a);
-  set("y", t/2 + ws2/2);
+  set("y", g/2 + ws2/2);
   set("y span", ws2);
   set("z span", thickness);
   set("material", Core_Material);
@@ -25,10 +25,10 @@ for(i=1:N+1) {
 
 for(i=1:N+1) {
   addrect;
-  set("x",x(i));
+  set("x", x(i));
   set("name","Bottom SWG " + num2str(i));
   set("x span", a);
-  set("y", -t/2 - ws/2);
+  set("y", -g/2 - ws/2);
   set("y span", ws);
   set("z span", thickness);
   set("material", Core_Material);
@@ -42,7 +42,7 @@ for(i=1:N+1) {
 # Adding the tapering down Si waveguide
 
 x0 = -Lc/2 - Lt/2;
-y0 = -t/2 - ws/2;
+y0 = -g/2 - ws/2;
 z0 = 0;
 
 width_end = 0;
@@ -134,7 +134,7 @@ for(i=1:N){
 # Adding the Si tapering up waveguide
 
 x0 = Lc/2 + Lt/2;
-y0 = -t/2 - ws/2;
+y0 = -g/2 - ws/2;
 z0 = 0;
 
 width_end = 0;
@@ -225,7 +225,7 @@ for(i=2:N){
 # Adding the Si tapering up waveguide
 
 x0 = Lc/2 + Lt/2;
-y0 = t/2 + ws2/2;
+y0 = g/2 + ws2/2;
 z0 = 0;
 
 width_end = 0;
@@ -314,7 +314,7 @@ for(i=2:N){
 # ## Adds the top s-bend waveguide
 
 x0 = Lc/2 + Lt;
-y0 = t/2 + ws2/2;
+y0 = g/2 + ws2/2;
 z0 = 0;
 
 addwaveguide;
@@ -328,12 +328,12 @@ set("base angle", 90);
 set("base height", thickness);
 set("base width", wi);
 # select("Top S-bend");
-set("poles",[0,0; Lb/2,0; Lb/2, (Lb - ws2 - t)/2; Lb, (Lb - ws2 - t)/2]);
+set("poles",[0,0; Lb/2,0; Lb/2, (Lb - ws2 - g)/2; Lb, (Lb - ws2 - g)/2]);
 
 ## Adds the bottom s-bend waveguide
 
 x0 = Lc/2 + Lt;
-y0 = -t/2 - ws/2;
+y0 = -g/2 - ws/2;
 z0 = 0;
 
 addwaveguide;
@@ -347,7 +347,7 @@ set("base angle", 90);
 set("base height", thickness);
 set("base width", wi);
 # select("Top S-bend");
-set("poles",[0,0; Lb/2,0; Lb/2, -(Lb - ws - t)/2; Lb, -(Lb - ws - t)/2]);
+set("poles",[0,0; Lb/2,0; Lb/2, -(Lb - ws - g)/2; Lb, -(Lb - ws - g)/2]);
 
 ## Adds input waveguide
 addrect;
@@ -355,8 +355,8 @@ set('name', 'Input waveguide');
 set('material', Core_Material);
 set('x min', -substrate_length);
 set('x max', -(Lc/2 + Lt));
-set('y min', -(t + ws + wi)/2);
-set('y max', -(t + ws - wi)/2);
+set('y min', -(g + ws + wi)/2);
+set('y max', -(g + ws - wi)/2);
 set('z', 0); set('z span', thickness);
 
 ## Adds top output waveguide

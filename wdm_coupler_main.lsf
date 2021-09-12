@@ -9,25 +9,35 @@ wl0 = 1550e-9;
 
 # Sets up the analysis scripts for figure of merit
 setnamed("::model", "analysis script",'
-tx1 = getresult("P1", "T");
-T1 = spline(tx1.T, tx1.lambda, lambda_0);
-tx2 = getresult("P2", "T");
-T2 = spline(tx2.T, tx2.lambda, lambda_0);
+tx1a = getresult("P1", "T");
+T1a = spline(tx1a.T, tx1a.lambda, 1310e-9);
+tx2a = getresult("P2", "T");
+T2a = spline(tx2a.T, tx2a.lambda, 1310e-9);
+
+tx1b = getresult("P1", "T");
+T1b = spline(tx1b.T, tx1b.lambda, 1550e-9);
+tx2b = getresult("P2", "T");
+T2b = spline(tx2b.T, tx2b.lambda, 1550e-9);
+
+er_1 = 10*log10(T1b/T1a);
+er_2 = 10*log10(T2a/T2b);
+
+ER = er_1*er_2;
 ');
 setnamed("::model::");
-addanalysisprop("lambda_0", 0, wl0);
-addanalysisresult("T1");
-addanalysisresult("T2");
+addanalysisresult("ER");
+addanalysisresult("er_1");
+addanalysisresult("er_2");
 
 # Sweeping parameters
 wl_sweep = [1550e-9, 1310e-9];
-Lc_sweep = linspace(10e-6, 24.75e-6, 61);
-t_sweep = [60e-9, 100e-9];
+Lc_sweep = linspace(10e-6, 35e-6, 61);
+g_sweep = [94.8288e-9, 100e-9];
 
 # Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
 if(!exist('T1') & !exist('T2')){
-    T1 = matrix(length(wl_sweep), length(Lc_sweep), length(t_sweep));
-    T2 = matrix(length(wl_sweep), length(Lc_sweep), length(t_sweep));
+    T1 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T2 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
 }
 
 # Sets the fundamental parameters as model variables.
@@ -35,49 +45,87 @@ Clad_Material = 'SiO2 (Glass) - Palik';
 Box_Material = 'SiO2 (Glass) - Palik';
 Core_Material = 'Si (Silicon) - Palik';
 Lc = max(Lc_sweep);
-t = min(t_sweep);
+g = min(g_sweep);
 wi = 500e-9;
 Lt = 6e-6;
 Lb = 10e-6;
 ws = 1000e-9;
 ws2 = 1000e-9;
 Lambda = 200e-9;
-a = 100e-9;
+a = 69.3945e-9;
 thickness = 220e-9;
 
 substrate_length = Lc + 2*Lt + Lb + 30e-6;
 substrate_width = 30e-6;
 
+## Adding Optimization
+addsweep(1);
+setsweep("optimization", "name", "PSO");
+setsweep("PSO", "Type", "Maximize");
+setsweep("PSO", "algorithm", "Particle Swarm");
+setsweep("PSO", "maximum generations", 1000);
+setsweep("PSO", "generation size", 6);
+setsweep("PSO", "tolerance", 0);
+
+p1 = struct;
+p1.Parameter = "::model::WDM Coupler::Lc";
+p1.Type = "Length";
+p1.Min = 27e-6;
+p1.Max = 35e-6;
+
+p2 = struct;
+p2.Parameter = "::model::WDM Coupler::g";
+p2.Type = "Length";
+p2.Min = 60e-9;
+p2.Max = 100e-9;
+
+p3 = struct;
+p3.Parameter = "::model::WDM Coupler::a";
+p3.Type = "Length";
+p3.Min = 60e-9;
+p3.Max = 100e-9;
+
+addsweepparameter("PSO", p1);
+addsweepparameter("PSO", p2);
+addsweepparameter("PSO", p3);
+
+r1 = struct;
+r1.Name = "er";
+r1.Result = "::model::ER";
+r1.Optimize = true;
+
+addsweepresult("PSO", r1);
+
 ## Running the layout scripts
 wdm_coupler_layout;
 
-for(i = 1:length(wl_sweep)){
-    for(j = 1:length(Lc_sweep)){
-        for(k = 1:length(t_sweep)){
-            if(T1(i,j,k) == 0){ # checks if the iteration was already done
-                # Sets the parameters to the current iteration
-                switchtolayout;
-                setnamed("::model::source", "center wavelength", wl_sweep(i));
-                setnamed("::model::source", "wavelength span", 1e-9);
-                setnamed("::model::", "lambda_0", wl_sweep(i));
-                setnamed("::model::WDM Coupler", "Lc", Lc_sweep(j));
-                setnamed("::model::WDM Coupler", "t", t_sweep(k));
-
-                # Runs the simulation and grabs results
-                run;
-                runanalysis;
-                T1(i,j,k) = getresult("::model::", "T1");
-                T2(i,j,k) = getresult("::model::", "T2");
-
-                # Prints progress
-                ?num2str((k + (j-1)*length(t_sweep) + (i-1)*length(Lc_sweep)*length(t_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(t_sweep))*100) + '%';
-            } else {
-                ?num2str((k + (j-1)*length(t_sweep) + (i-1)*length(Lc_sweep)*length(t_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(t_sweep))*100) + '% skipped!';
-            }
-        }
-    }
-}
-
-# Saves the results
-filename = "./Results/tsweep_5";
-matlabsave(filename, Lc_sweep, wl_sweep, t_sweep, T1, T2, ws, ws2, a);
+# for(i = 1:length(wl_sweep)){
+#     for(j = 1:length(Lc_sweep)){
+#         for(k = 1:length(g_sweep)){
+#             if(T1(i,j,k) == 0){ # checks if the iteration was already done
+#                 # Sets the parameters to the current iteration
+#                 switchtolayout;
+#                 setnamed("::model::source", "center wavelength", wl_sweep(i));
+#                 setnamed("::model::source", "wavelength span", 1e-9);
+#                 setnamed("::model::", "lambda_0", wl_sweep(i));
+#                 setnamed("::model::WDM Coupler", "Lc", Lc_sweep(j));
+#                 setnamed("::model::WDM Coupler", "g", g_sweep(k));
+#
+#                 # Runs the simulation and grabs results
+#                 run;
+#                 runanalysis;
+#                 T1(i,j,k) = getresult("::model::", "T1");
+#                 T2(i,j,k) = getresult("::model::", "T2");
+#
+#                 # Prints progress
+#                 ?num2str((k + (j-1)*length(g_sweep) + (i-1)*length(Lc_sweep)*length(g_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(g_sweep))*100) + '%';
+#             } else {
+#                 ?num2str((k + (j-1)*length(g_sweep) + (i-1)*length(Lc_sweep)*length(g_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(g_sweep))*100) + '% skipped!';
+#             }
+#         }
+#     }
+# }
+#
+# # Saves the results
+# filename = "./Results/tsweep_5";
+# matlabsave(filename, Lc_sweep, wl_sweep, g_sweep, T1, T2, ws, ws2, a);
