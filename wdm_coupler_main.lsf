@@ -66,7 +66,9 @@ p1 = struct;
 p1.Parameter = "::model::WDM Coupler::Lc";
 p1.Type = "Length";
 p1.Min = 25e-6;
-p1.Max = 40e-6;
+p1.Max = 45e-6;
+p1.Start = p1.Min;
+p1.Stop = p1.Max;
 
 p2 = struct;
 p2.Parameter = "::model::WDM Coupler::g";
@@ -98,8 +100,9 @@ addsweep;
 setsweep("sweep", "Type", "Ranges");
 setsweep("sweep", "Number of points", 81);
 addsweepparameter("sweep", p1);
-addsweepparameter("sweep", p2);
-addsweepparameter("sweep", p3);
+addsweepresult("sweep", r1);
+addsweepresult("sweep", r2);
+addsweepresult("sweep", r3);
 
 ## Adding Optimization
 addsweep(1);
