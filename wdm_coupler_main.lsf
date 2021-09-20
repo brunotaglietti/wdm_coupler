@@ -45,14 +45,14 @@ Clad_Material = 'SiO2 (Glass) - Palik';
 Box_Material = 'SiO2 (Glass) - Palik';
 Core_Material = 'Si (Silicon) - Palik';
 Lc = max(Lc_sweep);
-g = min(g_sweep);
+g = max(g_sweep);
 wi = 500e-9;
 Lt = 6e-6;
 Lb = 10e-6;
 ws = 1000e-9;
 ws2 = 1000e-9;
 Lambda = 200e-9;
-a = 70e-9;
+a = 100e-9;
 thickness = 220e-9;
 
 substrate_length = Lc + 2*Lt + Lb + 30e-6;
@@ -95,8 +95,8 @@ r3.Result = "::model::er_2";
 
 ## Adding Sweep
 addsweep;
-setsweep("Type", "Ranges");
-setsweep("Number of points", 81);
+setsweep("sweep", "Type", "Ranges");
+setsweep("sweep", "Number of points", 81);
 addsweepparameter("sweep", p1);
 addsweepparameter("sweep", p2);
 addsweepparameter("sweep", p3);
