@@ -65,7 +65,7 @@ set('script', read("wdm_coupler_struc.lsf"));
 # Physical components are finished
 ## Adds the FDTD simulation area and parameters
 addvarfdtd;
-set("simulation time", 1.5e-12);
+set("simulation time", 2.5e-12);
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
