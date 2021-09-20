@@ -31,7 +31,7 @@ addanalysisresult("er_2");
 
 # Sweeping parameters
 wl_sweep = [1550e-9, 1310e-9];
-Lc_sweep = linspace(10e-6, 35e-6, 61);
+Lc_sweep = linspace(10e-6, 45e-6, 61);
 g_sweep = [94.8288e-9, 100e-9];
 
 # Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
@@ -52,11 +52,54 @@ Lb = 10e-6;
 ws = 1000e-9;
 ws2 = 1000e-9;
 Lambda = 200e-9;
-a = 69.3945e-9;
+a = 70e-9;
 thickness = 220e-9;
 
 substrate_length = Lc + 2*Lt + Lb + 30e-6;
 substrate_width = 30e-6;
+
+## Running the layout scripts
+wdm_coupler_layout;
+
+## Setting optimization/sweep Parameters and FOM
+p1 = struct;
+p1.Parameter = "::model::WDM Coupler::Lc";
+p1.Type = "Length";
+p1.Min = 25e-6;
+p1.Max = 40e-6;
+
+p2 = struct;
+p2.Parameter = "::model::WDM Coupler::g";
+p2.Type = "Length";
+p2.Min = 80e-9;
+p2.Max = 120e-9;
+
+p3 = struct;
+p3.Parameter = "::model::WDM Coupler::a";
+p3.Type = "Length";
+p3.Min = 70e-9;
+p3.Max = 130e-9;
+
+r1 = struct;
+r1.Name = "er";
+r1.Result = "::model::ER";
+r1.Optimize = true;
+
+r2 = struct;
+r2.Name = "er1";
+r2.Result = "::model::er_1";
+
+r3 = struct;
+r3.Name = "er2";
+r3.Result = "::model::er_2";
+
+## Adding Sweep
+addsweep;
+setsweep("Type", "Ranges");
+setsweep("Number of points", 81);
+addsweepparameter("sweep", p1);
+addsweepparameter("sweep", p2);
+addsweepparameter("sweep", p3);
 
 ## Adding Optimization
 addsweep(1);
@@ -67,37 +110,10 @@ setsweep("PSO", "maximum generations", 1000);
 setsweep("PSO", "generation size", 6);
 setsweep("PSO", "tolerance", 0);
 
-p1 = struct;
-p1.Parameter = "::model::WDM Coupler::Lc";
-p1.Type = "Length";
-p1.Min = 27e-6;
-p1.Max = 35e-6;
-
-p2 = struct;
-p2.Parameter = "::model::WDM Coupler::g";
-p2.Type = "Length";
-p2.Min = 60e-9;
-p2.Max = 100e-9;
-
-p3 = struct;
-p3.Parameter = "::model::WDM Coupler::a";
-p3.Type = "Length";
-p3.Min = 60e-9;
-p3.Max = 100e-9;
-
 addsweepparameter("PSO", p1);
 addsweepparameter("PSO", p2);
 addsweepparameter("PSO", p3);
-
-r1 = struct;
-r1.Name = "er";
-r1.Result = "::model::ER";
-r1.Optimize = true;
-
 addsweepresult("PSO", r1);
-
-## Running the layout scripts
-wdm_coupler_layout;
 
 # for(i = 1:length(wl_sweep)){
 #     for(j = 1:length(Lc_sweep)){
