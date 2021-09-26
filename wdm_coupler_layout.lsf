@@ -64,7 +64,8 @@ set('script', read("wdm_coupler_struc.lsf"));
 
 # Physical components are finished
 ## Adds the FDTD simulation area and parameters
-addvarfdtd;
+if(fileextension(currentfilename)=="lms") {addvarfdtd;}
+if(fileextension(currentfilename)=="fsp") {addfdtd;}
 set("simulation time", 2.5e-12);
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
@@ -72,17 +73,19 @@ set("y", 0);
 set("y span", 2*ws + g + Lb + 4e-6);
 set("z", 0);
 set("z span", 3*thickness);
-set("bandwidth", "broadband");
-set("maximum number of materials", 100);
-set("number of samples", 20);
-set("max coefficients", 3);
-set("fit tolerance", 0.01);
-set("imaginary weight", 1);
-set("improve stability", 1);
-set("make fit passive", 1);
-set("test points", [-Lc/4, 2*ws; Lc/4, 2*ws; -Lc/4, -2*ws; Lc/4, -2*ws]);
-set("x0", 0);
-set("y0", -g/2 - ws/2);
+if(fileextension(currentfilename)=="lms") {
+    set("bandwidth", "broadband");
+    set("maximum number of materials", 100);
+    set("number of samples", 20);
+    set("max coefficients", 3);
+    set("fit tolerance", 0.01);
+    set("imaginary weight", 1);
+    set("improve stability", 1);
+    set("make fit passive", 1);
+    set("test points", [-Lc/4, 2*ws; Lc/4, 2*ws; -Lc/4, -2*ws; Lc/4, -2*ws]);
+    set("x0", 0);
+    set("y0", -g/2 - ws/2);
+}
 set("z min bc", "Symmetric");
 set("z max bc", "PML");
 set("allow symmetry on all boundaries", 1);
@@ -100,12 +103,16 @@ set("z", 0);
 set("z span", 3*thickness);
 
 ## Adds the source
-addmodesource;
+if(fileextension(currentfilename)=="lms") {addmodesource;}
+if(fileextension(currentfilename)=="fsp") {addmode;}
 set("injection axis", "x-axis");
 set("direction", "forward");
-set("mode selection", "user select");
-set("selected mode number", 1);
-updatesourcemode(1);
+if(fileextension(currentfilename)=="lms") {
+    set("mode selection", "user select");
+    set("selected mode number", 1);
+    updatesourcemode(1);
+}
+if(fileextension(currentfilename)=="fsp") {set("mode selection", "fundamental TE mode");}
 set("x", -Lc/2 - Lt - 1e-6);
 set("y", -g/2 - ws/2);
 set("y span", 6*wi);
