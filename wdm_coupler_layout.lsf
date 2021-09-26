@@ -83,8 +83,9 @@ set("make fit passive", 1);
 set("test points", [-Lc/4, 2*ws; Lc/4, 2*ws; -Lc/4, -2*ws; Lc/4, -2*ws]);
 set("x0", 0);
 set("y0", -g/2 - ws/2);
-set("z min bc", "PML");
+set("z min bc", "Symmetric");
 set("z max bc", "PML");
+set("allow symmetry on all boundaries", 1);
 
 ## Determines the mesh area
 addmesh;
@@ -102,6 +103,9 @@ set("z span", 3*thickness);
 addmodesource;
 set("injection axis", "x-axis");
 set("direction", "forward");
+set("mode selection", "user select");
+set("selected mode number", 1);
+updatesourcemode(1);
 set("x", -Lc/2 - Lt - 1e-6);
 set("y", -g/2 - ws/2);
 set("y span", 6*wi);

@@ -61,36 +61,36 @@ substrate_width = 30e-6;
 ## Running the layout scripts
 wdm_coupler_layout;
 
+## Resetting for optimized parameters
+setnamed("::model::WDM Coupler", "Lc", 38.4312e-6);
+# setnamed("::model::WDM Coupler", "g", 113.137e-9);
+# setnamed("::model::WDM Coupler", "a", 77.9534e-9);
+
 ## Setting optimization/sweep Parameters and FOM
 p1 = struct;
 p1.Parameter = "::model::WDM Coupler::Lc";
 p1.Type = "Length";
-p1.Min = 25e-6;
-p1.Max = 45e-6;
+p1.Min = 35e-6;
+p1.Max = 50e-6;
 p1.Start = p1.Min;
 p1.Stop = p1.Max;
-
 p2 = struct;
 p2.Parameter = "::model::WDM Coupler::g";
 p2.Type = "Length";
 p2.Min = 80e-9;
 p2.Max = 120e-9;
-
 p3 = struct;
 p3.Parameter = "::model::WDM Coupler::a";
 p3.Type = "Length";
 p3.Min = 70e-9;
 p3.Max = 130e-9;
-
 r1 = struct;
 r1.Name = "er";
 r1.Result = "::model::ER";
 r1.Optimize = true;
-
 r2 = struct;
 r2.Name = "er1";
 r2.Result = "::model::er_1";
-
 r3 = struct;
 r3.Name = "er2";
 r3.Result = "::model::er_2";
@@ -98,7 +98,7 @@ r3.Result = "::model::er_2";
 ## Adding Sweep
 addsweep;
 setsweep("sweep", "Type", "Ranges");
-setsweep("sweep", "Number of points", 81);
+setsweep("sweep", "Number of points", 61);
 addsweepparameter("sweep", p1);
 addsweepresult("sweep", r1);
 addsweepresult("sweep", r2);
@@ -112,7 +112,6 @@ setsweep("PSO", "algorithm", "Particle Swarm");
 setsweep("PSO", "maximum generations", 1000);
 setsweep("PSO", "generation size", 6);
 setsweep("PSO", "tolerance", 0);
-
 addsweepparameter("PSO", p1);
 addsweepparameter("PSO", p2);
 addsweepparameter("PSO", p3);
