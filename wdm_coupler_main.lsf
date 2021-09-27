@@ -62,9 +62,9 @@ substrate_width = 30e-6;
 wdm_coupler_layout;
 
 ## Resetting for optimized parameters
-setnamed("::model::WDM Coupler", "Lc", 38.4312e-6);
-# setnamed("::model::WDM Coupler", "g", 113.137e-9);
-# setnamed("::model::WDM Coupler", "a", 77.9534e-9);
+setnamed("::model::WDM Coupler", "Lc", 41.1921e-6);
+setnamed("::model::WDM Coupler", "g", 92.1282e-9);
+setnamed("::model::WDM Coupler", "a", 105.665e-9);
 
 ## Setting optimization/sweep Parameters and FOM
 p1 = struct;
