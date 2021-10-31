@@ -10,14 +10,14 @@ wl0 = 1550e-9;
 # Sets up the analysis scripts for figure of merit
 setnamed("::model", "analysis script",'
 tx1a = getresult("P1", "T");
-T1a = spline(tx1a.T, tx1a.lambda, 1310e-9);
+T1a = spline(tx1a.T, tx1a.lambda, 1315e-9);
 tx2a = getresult("P2", "T");
-T2a = spline(tx2a.T, tx2a.lambda, 1310e-9);
+T2a = spline(tx2a.T, tx2a.lambda, 1315e-9);
 
 tx1b = getresult("P1", "T");
-T1b = spline(tx1b.T, tx1b.lambda, 1550e-9);
+T1b = spline(tx1b.T, tx1b.lambda, 1555e-9);
 tx2b = getresult("P2", "T");
-T2b = spline(tx2b.T, tx2b.lambda, 1550e-9);
+T2b = spline(tx2b.T, tx2b.lambda, 1555e-9);
 
 er_1 = 10*log10(T1b/T1a);
 er_2 = 10*log10(T2a/T2b);
@@ -25,34 +25,44 @@ er_2 = 10*log10(T2a/T2b);
 ER = er_1*er_2;
 ');
 setnamed("::model::");
+addanalysisresult("T1a");
+addanalysisresult("T2a");
+addanalysisresult("T1b");
+addanalysisresult("T2b");
 addanalysisresult("ER");
 addanalysisresult("er_1");
 addanalysisresult("er_2");
 
 # Sweeping parameters
-wl_sweep = [1550e-9, 1310e-9];
-Lc_sweep = linspace(10e-6, 45e-6, 61);
-g_sweep = [94.8288e-9, 100e-9];
+# wl_sweep = [1310e-9, 1550e-9];
+# Lc_sweep = linspace(5e-6, 34.4e-6, 161);
+# g_sweep = [95e-9, 98e-9];
 
 # Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
-if(!exist('T1') & !exist('T2')){
-    T1 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
-    T2 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+if(!exist('T1a') & !exist('T2a')){
+    T1a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T2a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T1b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T2b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    er1 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    er2 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
 }
 
 # Sets the fundamental parameters as model variables.
 Clad_Material = 'SiO2 (Glass) - Palik';
 Box_Material = 'SiO2 (Glass) - Palik';
 Core_Material = 'Si (Silicon) - Palik';
-Lc = max(Lc_sweep);
-g = max(g_sweep);
+# Lc = max(Lc_sweep);
+# g = max(g_sweep);
+Lc = 34.4e-6;
+g = 98e-9;
 wi = 500e-9;
 Lt = 6e-6;
 Lb = 10e-6;
 ws = 1000e-9;
 ws2 = 1000e-9;
 Lambda = 200e-9;
-a = 100e-9;
+a = 85e-9;
 thickness = 220e-9;
 
 substrate_length = Lc + 2*Lt + Lb + 30e-6;
@@ -62,9 +72,9 @@ substrate_width = 30e-6;
 wdm_coupler_layout;
 
 ## Resetting for optimized parameters
-setnamed("::model::WDM Coupler", "Lc", 41.1921e-6);
-setnamed("::model::WDM Coupler", "g", 92.1282e-9);
-setnamed("::model::WDM Coupler", "a", 105.665e-9);
+# setnamed("::model::WDM Coupler", "Lc", 41.1921e-6);
+# setnamed("::model::WDM Coupler", "g", 92.1282e-9);
+# setnamed("::model::WDM Coupler", "a", 105.665e-9);
 
 ## Setting optimization/sweep Parameters and FOM
 p1 = struct;
@@ -117,33 +127,4 @@ addsweepparameter("PSO", p2);
 addsweepparameter("PSO", p3);
 addsweepresult("PSO", r1);
 
-# for(i = 1:length(wl_sweep)){
-#     for(j = 1:length(Lc_sweep)){
-#         for(k = 1:length(g_sweep)){
-#             if(T1(i,j,k) == 0){ # checks if the iteration was already done
-#                 # Sets the parameters to the current iteration
-#                 switchtolayout;
-#                 setnamed("::model::source", "center wavelength", wl_sweep(i));
-#                 setnamed("::model::source", "wavelength span", 1e-9);
-#                 setnamed("::model::", "lambda_0", wl_sweep(i));
-#                 setnamed("::model::WDM Coupler", "Lc", Lc_sweep(j));
-#                 setnamed("::model::WDM Coupler", "g", g_sweep(k));
-#
-#                 # Runs the simulation and grabs results
-#                 run;
-#                 runanalysis;
-#                 T1(i,j,k) = getresult("::model::", "T1");
-#                 T2(i,j,k) = getresult("::model::", "T2");
-#
-#                 # Prints progress
-#                 ?num2str((k + (j-1)*length(g_sweep) + (i-1)*length(Lc_sweep)*length(g_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(g_sweep))*100) + '%';
-#             } else {
-#                 ?num2str((k + (j-1)*length(g_sweep) + (i-1)*length(Lc_sweep)*length(g_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(g_sweep))*100) + '% skipped!';
-#             }
-#         }
-#     }
-# }
-#
-# # Saves the results
-# filename = "./Results/tsweep_5";
-# matlabsave(filename, Lc_sweep, wl_sweep, g_sweep, T1, T2, ws, ws2, a);
+# wdmc_hard_sweep;

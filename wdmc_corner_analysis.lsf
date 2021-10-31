@@ -1,0 +1,30 @@
+Lc = 34.4e-6;
+a = 85e-9;
+g = 98e-9;
+
+g_sweep = linspace(0.95*g, 1.05*g, 5);
+a_sweep = linspace(0.95*a, 1.05*a, 5);
+
+for(i = 1:length(g_sweep)){
+    for(j = 1:length(a_sweep)){
+        filename = 'CA_' + num2str(i) + num2str(j);
+        if(!fileexists(filename + '.mat')){
+            wdm_coupler_main;
+
+            ## Resetting for optimized parameters
+            # setnamed("::model::WDM Coupler", "Lc", Lc);
+            setnamed("::model::WDM Coupler", "g", g_sweep(i));
+            setnamed("::model::WDM Coupler", "a", a_sweep(i));
+
+            run;
+            P1 = getresult('P1');
+            P2 = getresult('P2');
+            Ptop = getresult('Top View Power Profile');
+            select('WDM Coupler');
+            layout = get;
+            matlabsave('./Corner Analysis Results/' + filename, P1, P2, Ptop, layout);
+        } else{
+            ?'Skipped ' + filename;
+        }
+    }
+}

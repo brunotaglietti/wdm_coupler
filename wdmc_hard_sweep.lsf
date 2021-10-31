@@ -1,0 +1,35 @@
+
+for(i = 1:length(wl_sweep)){
+    for(j = 1:length(Lc_sweep)){
+        for(k = 1:length(g_sweep)){
+            if(T1a(i,j,k) == 0){ # checks if the iteration was already done
+                # Sets the parameters to the current iteration
+                switchtolayout;
+                setnamed("::model::source", "center wavelength", wl_sweep(i));
+                setnamed("::model::source", "wavelength span", 1e-12);
+                # setnamed("::model::", "lambda_0", wl_sweep(i));
+                setnamed("::model::WDM Coupler", "Lc", Lc_sweep(j));
+                setnamed("::model::WDM Coupler", "g", g_sweep(k));
+
+                # Runs the simulation and grabs results
+                run;
+                runanalysis;
+                T1a(i,j,k) = getresult("::model::", "T1a");
+                T2a(i,j,k) = getresult("::model::", "T2a");
+                T1b(i,j,k) = getresult("::model::", "T1b");
+                T2b(i,j,k) = getresult("::model::", "T2b");
+                er1(i,j,k) = getresult("::model::", "er_1");
+                er2(i,j,k) = getresult("::model::", "er_2");
+
+                # Prints progress
+                ?num2str((k + (j-1)*length(g_sweep) + (i-1)*length(Lc_sweep)*length(g_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(g_sweep))*100) + '%';
+            } else {
+                ?num2str((k + (j-1)*length(g_sweep) + (i-1)*length(Lc_sweep)*length(g_sweep))/(length(wl_sweep)*length(Lc_sweep)*length(g_sweep))*100) + '% skipped!';
+            }
+        }
+    }
+}
+
+# Saves the results
+filename = "./Results/linewidth_10pm_T";
+matlabsave(filename, Lc_sweep, wl_sweep, g_sweep, T1a, T2a, T1b, T2b, ws, ws2, a);

@@ -1,0 +1,265 @@
+## SWG-Based WDM Coupler/Splitter
+
+# Resets the lumerical layout before running
+newproject; redrawoff; time_str;
+filename = "wdm";
+save(filename);
+
+wl0 = 1550e-9;
+
+# Sets up the analysis scripts for figure of merit
+setnamed("::model", "analysis script",'
+tx1a = getresult("P1", "T");
+T1a = spline(tx1a.T, tx1a.lambda, 1310e-9);
+tx2a = getresult("P2", "T");
+T2a = spline(tx2a.T, tx2a.lambda, 1310e-9);
+
+tx1b = getresult("P1", "T");
+T1b = spline(tx1b.T, tx1b.lambda, 1550e-9);
+tx2b = getresult("P2", "T");
+T2b = spline(tx2b.T, tx2b.lambda, 1550e-9);
+
+er_1 = 10*log10(T1b/T1a);
+er_2 = 10*log10(T2a/T2b);
+
+ER = er_1*er_2;
+');
+setnamed("::model::");
+addanalysisresult("T1a");
+addanalysisresult("T2a");
+addanalysisresult("T1b");
+addanalysisresult("T2b");
+addanalysisresult("ER");
+addanalysisresult("er_1");
+addanalysisresult("er_2");
+
+# Sweeping parameters
+wl_sweep = [1310e-9, 1550e-9];
+Lc_sweep = linspace(5e-6, 6e-6, 161);
+g_sweep = [95e-9, 100e-9];
+
+# Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
+if(!exist('T1a') & !exist('T2a')){
+    T1a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T2a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T1b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T2b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    er1 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    er2 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+}
+
+# Sets the fundamental parameters as model variables.
+Clad_Material = 'SiO2 (Glass) - Palik';
+Box_Material = 'SiO2 (Glass) - Palik';
+Core_Material = 'Si (Silicon) - Palik';
+Lc = max(Lc_sweep);
+g = max(g_sweep);
+wi = 500e-9;
+Lt = 6e-6;
+Lb = 10e-6;
+ws = 1000e-9;
+ws2 = 1000e-9;
+Lambda = 200e-9;
+a = 75e-9;
+thickness = 220e-9;
+
+substrate_length = Lc + 2*Lt + Lb + 30e-6;
+substrate_width = 30e-6;
+
+## draw cladding
+addrect;
+set("name","Clad");  set("material", Clad_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", 0);
+set("z max", 2e-6);
+set("override mesh order from material database",1);
+set("mesh order",3);  # similar to "send to back", put the cladding as a background.
+set("alpha", 0.3);
+
+## draw buried oxide
+addrect;
+set("name", "BOX"); set("material", Box_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", -3e-6); set("z max", 0);
+set("override mesh order from material database",1);
+set("mesh order",3);  # similar to "send to back", put the cladding as a background.
+set("alpha", 0.3);
+
+## draw silicon wafer
+addrect;
+set("name", "Wafer"); set("material", Core_Material);
+set("x min", -substrate_length/2);
+set("x max", substrate_length/2);
+set("y", 0);
+set("y span", substrate_width);
+set("z min", -6e-6); set("z max", -3e-6);
+set("alpha", 0.3);
+
+## Adds the top SWG bus
+addstructuregroup;
+set("name", "WDM Coupler");
+set("x",0);
+set("y", 0);
+set("z",0);
+adduserprop("Clad_Material", 5, 'SiO2 (Glass) - Palik');
+adduserprop("Box_Material", 5, 'SiO2 (Glass) - Palik');
+adduserprop("Core_Material", 5, 'Si (Silicon) - Palik');
+adduserprop("substrate_length", 2, substrate_length);
+adduserprop("substrate_width", 2, substrate_width);
+adduserprop("wi", 2, wi);
+adduserprop("Lc", 2, Lc);
+adduserprop("Lt", 2, Lt);
+adduserprop("Lb", 2, Lb);
+adduserprop("ws", 2, ws);
+adduserprop("ws2", 2, ws2);
+adduserprop("Lambda", 2, Lambda);
+adduserprop("a", 2, a);
+adduserprop("g", 2, g);
+adduserprop("thickness", 2, thickness);
+set("construction group", 1);
+set('script', read("wdm_coupler_struc.lsf"));
+
+## WDM Coupler design is finished
+## Setting additional waveguides
+
+# Physical components are finished
+## Adds the EME simulation area and parameters
+
+Lt_r = Lambda*round(Lt/Lambda);
+Lc_r = Lambda*round(Lc/Lambda);
+DC = a/Lambda;
+Ngroups = 2*2*round(Lt/Lambda) + 2*round(Lc/Lambda) + 2; # two cells for each period (Si, SiO2)
+G_spans = matrix(Ngroups, 1);
+G_spans(1) = 3e-6;
+for(n = 2:( 2 + 2*2*round(Lt/Lambda) + 2*round(Lc/Lambda) )){
+    if(mod(n,2)){
+        G_spans(n) = (1-DC)*Lambda;
+    } else {
+        G_spans(n) = DC*Lambda;
+    }
+}
+G_spans(Ngroups) = Lb + 3e-6;
+subcellMethod = matrix(Ngroups, 1);
+subcellMethod(2:(1+2*round(Lt/Lambda))) = ones(2*round(Lt/Lambda), 1);
+subcellMethod(1+2*round(Lt/Lambda)+2*round(Lc/Lambda) : 4*round(Lt/Lambda)+2*round(Lc/Lambda)) = ones(2*round(Lt/Lambda), 1);
+subcellMethod(Ngroups) = 1;
+
+addeme;
+set("display cells", 1);
+set("x min", -Lc_r/2 - Lt_r - a/2 - 3e-6);
+# set("x max", Lc_r/2 + Lt_r + Lb + 3e-6);
+set("y", 0);
+set("y span", 2*ws + g + Lb + 6.0e-6);
+set("z", 0);
+set("z span", 3e-6);
+set("number of cell groups", Ngroups);
+set("group spans", G_spans);
+set("cells", [ones(1, Ngroups-1), 20]);
+set("subcell method", subcellMethod);
+set("y min bc", "PML");
+set("y max bc", "PML");
+set("z min bc", "PML");
+set("z max bc", "PML");
+set("allow symmetry on all boundaries", 1);
+
+addemeport;
+select("EME::Ports::port_1");
+set("use full simulation span", 1);
+set("y", -g/2 - ws/2);
+set("y span", 2*wi);
+set("z", 0);
+set("z span", 3e-6);
+set("mode selection", "fundamental mode");
+
+select("EME::Ports::port_2");
+set("y", Lb/2);
+set("y span", 2*wi);
+set("z", 0);
+set("z span", 3*thickness);
+set("mode selection", "fundamental mode");
+
+select("EME::Ports::port_3");
+set("port location", 'right');
+set("y", -Lb/2);
+set("y span", 2*wi);
+set("z", 0);
+set("z span", 3*thickness);
+set("mode selection", "fundamental mode");
+
+## Top View Power Profile
+addemeprofile;
+set("name", "Top View Power Profile");
+set("monitor type", "2D Z-normal");
+set("x min", -Lc/2 - Lt - 2e-6);
+set("x max", Lc/2 + Lt + 2e-6);
+set("y", 0);
+set("y span", g + 2*ws + 2e-6);
+set("z", 0);
+
+
+## Running the layout scripts
+# wdm_coupler_layout;
+
+## Resetting for optimized parameters
+# setnamed("::model::WDM Coupler", "Lc", 41.1921e-6);
+# setnamed("::model::WDM Coupler", "g", 92.1282e-9);
+# setnamed("::model::WDM Coupler", "a", 105.665e-9);
+
+## Setting optimization/sweep Parameters and FOM
+p1 = struct;
+p1.Parameter = "::model::WDM Coupler::Lc";
+p1.Type = "Length";
+p1.Min = 35e-6;
+p1.Max = 50e-6;
+p1.Start = p1.Min;
+p1.Stop = p1.Max;
+p2 = struct;
+p2.Parameter = "::model::WDM Coupler::g";
+p2.Type = "Length";
+p2.Min = 80e-9;
+p2.Max = 120e-9;
+p3 = struct;
+p3.Parameter = "::model::WDM Coupler::a";
+p3.Type = "Length";
+p3.Min = 70e-9;
+p3.Max = 130e-9;
+r1 = struct;
+r1.Name = "er";
+r1.Result = "::model::ER";
+r1.Optimize = true;
+r2 = struct;
+r2.Name = "er1";
+r2.Result = "::model::er_1";
+r3 = struct;
+r3.Name = "er2";
+r3.Result = "::model::er_2";
+
+## Adding Sweep
+addsweep;
+setsweep("sweep", "Type", "Ranges");
+setsweep("sweep", "Number of points", 61);
+addsweepparameter("sweep", p1);
+addsweepresult("sweep", r1);
+addsweepresult("sweep", r2);
+addsweepresult("sweep", r3);
+
+## Adding Optimization
+addsweep(1);
+setsweep("optimization", "name", "PSO");
+setsweep("PSO", "Type", "Maximize");
+setsweep("PSO", "algorithm", "Particle Swarm");
+setsweep("PSO", "maximum generations", 1000);
+setsweep("PSO", "generation size", 6);
+setsweep("PSO", "tolerance", 0);
+addsweepparameter("PSO", p1);
+addsweepparameter("PSO", p2);
+addsweepparameter("PSO", p3);
+addsweepresult("PSO", r1);
+
+# wdmc_hard_sweep;

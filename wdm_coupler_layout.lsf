@@ -64,15 +64,14 @@ set('script', read("wdm_coupler_struc.lsf"));
 
 # Physical components are finished
 ## Adds the FDTD simulation area and parameters
-if(fileextension(currentfilename)=="lms") {addvarfdtd;}
-if(fileextension(currentfilename)=="fsp") {addfdtd;}
-set("simulation time", 2.5e-12);
+if(fileextension(currentfilename)=="lms") {addvarfdtd; set("simulation time", 10e-12);}
+if(fileextension(currentfilename)=="fsp") {addfdtd; set("simulation time", 10e-12);}
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
-set("y span", 2*ws + g + Lb + 4e-6);
+set("y span", 2*ws + g + Lb + 1.0e-6);
 set("z", 0);
-set("z span", 3*thickness);
+set("z span", 10*thickness);
 if(fileextension(currentfilename)=="lms") {
     set("bandwidth", "broadband");
     set("maximum number of materials", 100);
@@ -85,10 +84,13 @@ if(fileextension(currentfilename)=="lms") {
     set("test points", [-Lc/4, 2*ws; Lc/4, 2*ws; -Lc/4, -2*ws; Lc/4, -2*ws]);
     set("x0", 0);
     set("y0", -g/2 - ws/2);
+    set('mesh accuracy', 4);
 }
 set("z min bc", "Symmetric");
 set("z max bc", "PML");
 set("allow symmetry on all boundaries", 1);
+set('pml profile', 3);
+set('auto shutoff min', 1e-7);
 
 ## Determines the mesh area
 addmesh;
@@ -98,7 +100,7 @@ set("dz", 0.025e-6);
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
-set("y span", 2*ws + g + Lb + 4e-6);
+set("y span", 2*ws + g + Lb + 0.5e-6);
 set("z", 0);
 set("z span", 3*thickness);
 
@@ -116,8 +118,8 @@ if(fileextension(currentfilename)=="fsp") {set("mode selection", "fundamental TE
 set("x", -Lc/2 - Lt - 1e-6);
 set("y", -g/2 - ws/2);
 set("y span", 6*wi);
-set("wavelength start", 1310e-9);
-set("wavelength stop", 1550e-9);
+set("wavelength start", 1195e-9);
+set("wavelength stop", 1675e-9);
 
 ## Top View Power Profile
 addprofile;
@@ -138,6 +140,8 @@ set("y", Lb/2);
 set("y span", 3*wi);
 set("z", 0);
 set("z span", 3*thickness);
+set('override global monitor settings', 1);
+set('frequency points', 33);
 
 ## Port 2 Results
 addpower;
@@ -148,3 +152,5 @@ set("y", -Lb/2);
 set("y span", 3*(wi+g));
 set("z", 0);
 set("z span", 3*thickness);
+set('override global monitor settings', 1);
+set('frequency points', 33);
