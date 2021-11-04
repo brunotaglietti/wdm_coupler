@@ -7,8 +7,8 @@ a_sweep = linspace(0.95*a, 1.05*a, 5);
 
 for(i = 1:length(g_sweep)){
     for(j = 1:length(a_sweep)){
-        filename = 'CA_' + num2str(i) + num2str(j);
-        if(!fileexists(filename + '.mat')){
+        ?CA_fname = './Corner Analysis Results/CA_' + num2str(i) + num2str(j);
+        if(!fileexists(CA_fname + '.mat')){
             wdm_coupler_main;
 
             ## Resetting for optimized parameters
@@ -17,14 +17,17 @@ for(i = 1:length(g_sweep)){
             setnamed("::model::WDM Coupler", "a", a_sweep(i));
 
             run;
-            P1 = getresult('P1');
-            P2 = getresult('P2');
-            Ptop = getresult('Top View Power Profile');
+            T1 = getresult('P1', 'T');
+            T2 = getresult('P2', 'T');
+            Ptop = getresult('Top View Power Profile', 'P');
             select('WDM Coupler');
-            layout = get;
-            matlabsave('./Corner Analysis Results/' + filename, P1, P2, Ptop, layout);
+            layout = struct;
+            layout.a = get('a');
+            layout.g = get('g');
+            layout.Lc = get('Lc');
+            matlabsave(CA_fname, T1, T2, Ptop, layout, g_sweep, a_sweep);
         } else{
-            ?'Skipped ' + filename;
+            ?'Skipped ' + CA_fname;
         }
     }
 }

@@ -38,16 +38,6 @@ addanalysisresult("er_2");
 # Lc_sweep = linspace(5e-6, 34.4e-6, 161);
 # g_sweep = [95e-9, 98e-9];
 
-# Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
-if(!exist('T1a') & !exist('T2a')){
-    T1a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
-    T2a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
-    T1b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
-    T2b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
-    er1 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
-    er2 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
-}
-
 # Sets the fundamental parameters as model variables.
 Clad_Material = 'SiO2 (Glass) - Palik';
 Box_Material = 'SiO2 (Glass) - Palik';

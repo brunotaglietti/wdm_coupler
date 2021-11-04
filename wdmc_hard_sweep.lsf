@@ -1,3 +1,12 @@
+# Checks if the matrices already exist, in which case leaves them untouch so that the sweep can just skip the iterations already done.
+if(!exist('T1a') & !exist('T2a')){
+    T1a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T2a = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T1b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    T2b = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    er1 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+    er2 = matrix(length(wl_sweep), length(Lc_sweep), length(g_sweep));
+}
 
 for(i = 1:length(wl_sweep)){
     for(j = 1:length(Lc_sweep)){
