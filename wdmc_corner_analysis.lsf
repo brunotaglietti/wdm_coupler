@@ -2,7 +2,8 @@ Lc = 34.4e-6;
 a = 85e-9;
 g = 98e-9;
 
-g_sweep = linspace(0.95*g, 1.05*g, 5);
+# g_sweep = linspace(0.95*g, 1.05*g, 5);
+g_sweep = g;
 a_sweep = linspace(0.95*a, 1.05*a, 5);
 
 for(i = 1:length(g_sweep)){
