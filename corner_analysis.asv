@@ -38,20 +38,20 @@ for n = 1:length(ca_files)
     er2(ai,gi) = 10*log10(T2o(ai,gi)/T2c(ai,gi));
 end
 
-% %% Contour Plots
-% [X, Y] = meshgrid(g_sweep*1e9, a_sweep*1e9);
-% figure(1);
-% subplot 211
-% [C,h] = contour(X,Y,er1,'ShowText','on');
-% clabel(C,h,'interpreter','latex')
-% xlabel('$g$ [nm]'); ylabel('$a$ [nm]');
-% title('$er_1$');
-% 
-% subplot 212
-% [C,h] = contour(X,Y,er2,'ShowText','on');
-% clabel(C,h,'interpreter','latex')
-% xlabel('$g$ [nm]'); ylabel('$a$ [nm]');
-% title('$er_2$');
+%% Contour Plots
+[X, Y] = meshgrid(g_sweep*1e9, a_sweep*1e9);
+figure(1);
+subplot 211
+[C,h] = contour(X,Y,er1,'ShowText','on');
+clabel(C,h,'interpreter','latex')
+xlabel('$g$ [nm]'); ylabel('$a$ [nm]');
+title('$er_1$');
+
+subplot 212
+[C,h] = contour(X,Y,er2,'ShowText','on');
+clabel(C,h,'interpreter','latex')
+xlabel('$g$ [nm]'); ylabel('$a$ [nm]');
+title('$er_2$');
 
 % figure(2);
 % subplot 221

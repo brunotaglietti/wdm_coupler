@@ -64,8 +64,8 @@ set('script', read("wdm_coupler_struc.lsf"));
 
 # Physical components are finished
 ## Adds the FDTD simulation area and parameters
-if(fileextension(currentfilename)=="lms") {addvarfdtd; set("simulation time", 10e-12);}
-if(fileextension(currentfilename)=="fsp") {addfdtd; set("simulation time", 10e-12);}
+if(fileextension(currentfilename)=="lms") {addvarfdtd; set("simulation time", 15e-12);}
+if(fileextension(currentfilename)=="fsp") {addfdtd; set("simulation time", 15e-12);}
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
@@ -85,6 +85,7 @@ if(fileextension(currentfilename)=="lms") {
     set("x0", 0);
     set("y0", -g/2 - ws/2);
     set('mesh accuracy', 4);
+    set('min mesh step', 1e-12);
 }
 set("z min bc", "Symmetric");
 set("z max bc", "PML");
