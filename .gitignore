@@ -1,3 +1,4 @@
 *.lms
 *.log
 *.mat
+backup*
