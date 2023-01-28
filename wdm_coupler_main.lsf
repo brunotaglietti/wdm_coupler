@@ -2,27 +2,27 @@
 
 # Resets the lumerical layout before running
 newproject; redrawoff; time_str;
-filename = "wdm";
-save(filename);
+filename = "L5";
+save('L5.lms');
 
 wl0 = 1550e-9;
 
 # Sets up the analysis scripts for figure of merit
 setnamed("::model", "analysis script",'
 tx1a = getresult("P1", "T");
-T1a = spline(tx1a.T, tx1a.lambda, 1315e-9);
+T1a = spline(tx1a.T, tx1a.lambda, 1310e-9); # Interpolates T1 at 1310 nm
 tx2a = getresult("P2", "T");
-T2a = spline(tx2a.T, tx2a.lambda, 1315e-9);
+T2a = spline(tx2a.T, tx2a.lambda, 1310e-9); # Interpolates T2 at 1310 nm
 
 tx1b = getresult("P1", "T");
-T1b = spline(tx1b.T, tx1b.lambda, 1555e-9);
+T1b = spline(tx1b.T, tx1b.lambda, 1550e-9); # Interpolates T1 at 1550 nm
 tx2b = getresult("P2", "T");
-T2b = spline(tx2b.T, tx2b.lambda, 1555e-9);
+T2b = spline(tx2b.T, tx2b.lambda, 1550e-9); # Interpolates T2 at 1550 nm
 
-er_1 = 10*log10(T1b/T1a);
-er_2 = 10*log10(T2a/T2b);
+er_1 = 10*log10(T1b/T1a);   # Calculates the Extinction Ratio for port 1
+er_2 = 10*log10(T2a/T2b);   # Calculates the Extinction Ratio for port 2
 
-ER = er_1*er_2;
+ER = er_1*er_2; # Used as FOM for the PSO
 ');
 setnamed("::model::");
 addanalysisresult("T1a");
@@ -33,59 +33,49 @@ addanalysisresult("ER");
 addanalysisresult("er_1");
 addanalysisresult("er_2");
 
-# Sweeping parameters
-# wl_sweep = [1310e-9, 1550e-9];
-# Lc_sweep = linspace(5e-6, 34.4e-6, 161);
-# g_sweep = [95e-9, 98e-9];
-
 # Sets the fundamental parameters as model variables.
 Clad_Material = 'SiO2 (Glass) - Palik';
 Box_Material = 'SiO2 (Glass) - Palik';
 Core_Material = 'Si (Silicon) - Palik';
-# Lc = max(Lc_sweep);
-# g = max(g_sweep);
-# Lc = 34.4e-6;
-Lc = 50e-6;
-g = 110e-9;
-wi = 500e-9;
-Lt = 6e-6;
-Lb = 10e-6;
-ws = 1000e-9;
-ws2 = 1000e-9;
-# Lambda = 200e-9;
-Lambda = 210e-9;
-a = 91e-9;
-thickness = 220e-9;
+
+Lc = 13.2e-6;   # Coupler length
+a = 0.088204e-6;    # SWG segment length
+g = 0.150433e-6;    # Coupler gap distance
+
+wi = 500e-9;    # Width of the input solid core waveguide
+Lt = 5e-6;  # Length of the SWG taper
+Lb = 10e-6; # Length of the S-bends
+ws = 500e-9;    # Width of the bottom SWG waveguide bus
+ws2 = 500e-9;   # Width of the top SWG waveguide bus
+Lambda = 200e-9;    # SWG period
+thickness = 220e-9; # Thickness of the Silicon
+overetch = 00e-9;   # Random size variations of the SWG segments
+sidewall_angle = 90; # degrees
 
 substrate_length = Lc + 2*Lt + Lb + 30e-6;
 substrate_width = 30e-6;
 
-## Running the layout scripts
+## Runs the layout scripts
 wdm_coupler_layout;
 
-## Resetting for optimized parameters
-# setnamed("::model::WDM Coupler", "Lc", 41.1921e-6);
-# setnamed("::model::WDM Coupler", "g", 92.1282e-9);
-# setnamed("::model::WDM Coupler", "a", 105.665e-9);
-
-## Setting optimization/sweep Parameters and FOM
+## Sets optimization/sweep Parameters and FOM
 p1 = struct;
 p1.Parameter = "::model::WDM Coupler::Lc";
 p1.Type = "Length";
-p1.Min = 35e-6;
+p1.Min = 10e-6;
 p1.Max = 50e-6;
 p1.Start = p1.Min;
 p1.Stop = p1.Max;
 p2 = struct;
 p2.Parameter = "::model::WDM Coupler::g";
 p2.Type = "Length";
-p2.Min = 80e-9;
-p2.Max = 120e-9;
+p2.Min = g - 2e-9;
+p2.Max = g + 2e-9;
 p3 = struct;
 p3.Parameter = "::model::WDM Coupler::a";
 p3.Type = "Length";
-p3.Min = 70e-9;
-p3.Max = 130e-9;
+p3.Min = a - 2e-9;
+p3.Max = a + 2e-9;
 r1 = struct;
 r1.Name = "er";
 r1.Result = "::model::ER";
@@ -97,16 +87,16 @@ r3 = struct;
 r3.Name = "er2";
 r3.Result = "::model::er_2";
 
-## Adding Sweep
+## Adds Sweep
 addsweep;
 setsweep("sweep", "Type", "Ranges");
-setsweep("sweep", "Number of points", 61);
+setsweep("sweep", "Number of points", round((p1.Max - p1.Min)/Lambda)+1);
 addsweepparameter("sweep", p1);
 addsweepresult("sweep", r1);
 addsweepresult("sweep", r2);
 addsweepresult("sweep", r3);
 
-## Adding Optimization
+## Adds Optimization
 addsweep(1);
 setsweep("optimization", "name", "PSO");
 setsweep("PSO", "Type", "Maximize");
@@ -114,9 +104,15 @@ setsweep("PSO", "algorithm", "Particle Swarm");
 setsweep("PSO", "maximum generations", 1000);
 setsweep("PSO", "generation size", 6);
 setsweep("PSO", "tolerance", 0);
-addsweepparameter("PSO", p1);
 addsweepparameter("PSO", p2);
+addsweepparameter("PSO", p3);
 # addsweepparameter("PSO", p3);
 addsweepresult("PSO", r1);
 
-# wdmc_hard_sweep;
+
+ # run;
+ #
+ # T1 = getresult('P1', 'T');
+ # T2 = getresult('P2', 'T');
+ # Ptop = getresult('Top View Power Profile', 'P');
+ # matlabsave(filename, T1, T2, Ptop);

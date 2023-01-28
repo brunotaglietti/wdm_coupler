@@ -6,36 +6,43 @@ N = round(Lc/Lambda);
 x_span_rounded = Lambda*N;
 x=linspace(-x_span_rounded/2,x_span_rounded/2,N+1);
 
+V = matrix(4,2); # Vertices
+V=[-a/2, ws/2; a/2, ws/2; a/2, -ws/2; -a/2, -ws/2];
+
 for(i=1:N+1) {
-  addrect;
+  addpoly;
   set("x", x(i));
   set("name","top SWG " + num2str(i));
-  set("x span",a);
+  # set("x span",a - overetch*rand);    # Random variations
   set("y", g/2 + ws2/2);
-  set("y span", ws2);
+  # set("y span", ws2 - overetch*rand);
   set("z span", thickness);
+  set("vertices",V);
   set("material", Core_Material);
   if(get("material")=="<Object defined dielectric>")
     { set("index",3.4764); }
   set("override mesh order from material database",1);
   set("mesh order",1);
+  # usr_extrude_poly;   # Creates angles on the four sidewalls
 }
 
 ## Adds the bottom SWG bus
 
 for(i=1:N+1) {
-  addrect;
+  addpoly;
   set("x", x(i));
   set("name","Bottom SWG " + num2str(i));
-  set("x span", a);
+  # set("x span", a - overetch*rand);
   set("y", -g/2 - ws/2);
-  set("y span", ws);
+  # set("y span", ws - overetch*rand);
   set("z span", thickness);
+  set("vertices", V);
   set("material", Core_Material);
   if(get("material")=="<Object defined dielectric>")
     { set("index",3.4764); }
   set("override mesh order from material database",1);
   set("mesh order",1);
+  # usr_extrude_poly;
 }
 
 ## Adds the forward facing taper

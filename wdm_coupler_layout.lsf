@@ -56,16 +56,16 @@ adduserprop("Lambda", 2, Lambda);
 adduserprop("a", 2, a);
 adduserprop("g", 2, g);
 adduserprop("thickness", 2, thickness);
+adduserprop("overetch", 2, overetch);
+adduserprop("sidewall_angle", 0, sidewall_angle);
 set("construction group", 1);
 set('script', read("wdm_coupler_struc.lsf"));
 
 ## WDM Coupler design is finished
-## Setting additional waveguides
 
-# Physical components are finished
 ## Adds the FDTD simulation area and parameters
-if(fileextension(currentfilename)=="lms") {addvarfdtd; set("simulation time", 15e-12);}
-if(fileextension(currentfilename)=="fsp") {addfdtd; set("simulation time", 15e-12);}
+if(fileextension(currentfilename)=="lms") {addvarfdtd; set("simulation time", 8e-12);}
+if(fileextension(currentfilename)=="fsp") {addfdtd; set("simulation time", 8e-12);}
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
@@ -85,19 +85,19 @@ if(fileextension(currentfilename)=="lms") {
     set("x0", 0);
     set("y0", -g/2 - ws/2);
     set('mesh accuracy', 4);
-    set('min mesh step', 1e-12);
+    set('min mesh step', 1e-9);
 }
 set("z min bc", "Symmetric");
 set("z max bc", "PML");
 set("allow symmetry on all boundaries", 1);
 set('pml profile', 3);
-set('auto shutoff min', 1e-7);
+set('auto shutoff min', 1e-5);
 
 ## Determines the mesh area
 addmesh;
-set("dx", 0.025e-6);
-set("dy", 0.025e-6);
-set("dz", 0.025e-6);
+set("dx", 0.020e-6);
+set("dy", 0.020e-6);
+set("dz", 0.020e-6);
 set("x min", -Lc/2 - Lt - 2e-6);
 set("x max", Lc/2 + Lt + Lb + 2e-6);
 set("y", 0);
@@ -118,7 +118,7 @@ if(fileextension(currentfilename)=="lms") {
 if(fileextension(currentfilename)=="fsp") {set("mode selection", "fundamental TE mode");}
 set("x", -Lc/2 - Lt - 1e-6);
 set("y", -g/2 - ws/2);
-set("y span", 6*wi);
+set("y span", 10*wi);
 set("wavelength start", 1195e-9);
 set("wavelength stop", 1675e-9);
 
@@ -142,7 +142,7 @@ set("y span", 3*wi);
 set("z", 0);
 set("z span", 3*thickness);
 set('override global monitor settings', 1);
-set('frequency points', 33);
+set('frequency points', 251);
 
 ## Port 2 Results
 addpower;
@@ -154,4 +154,4 @@ set("y span", 3*(wi+g));
 set("z", 0);
 set("z span", 3*thickness);
 set('override global monitor settings', 1);
-set('frequency points', 33);
+set('frequency points', 251);
